@@ -6,12 +6,13 @@
   <section class="{{ $h.class }}">
     <div class="absolute inset-0 z-0">
       {{- with $h.video }}
-      <video autoplay loop muted playsinline preload="metadata" class="absolute inset-0 w-full h-full object-cover opacity-50">
+      {{- $v := index hugo.Data.videos.videos (path.Base .) }}
+      <video autoplay loop muted playsinline preload="none"{{ with $v }} poster="{{ .poster }}"{{ end }} class="absolute inset-0 w-full h-full object-cover opacity-50">
         <source src="{{ . }}" type="video/mp4">
       </video>
       {{- end }}
       {{- if and (not $h.video) $h.image }}
-      <img src="{{ $h.image }}" alt="" class="absolute inset-0 w-full h-full object-cover opacity-50" loading="eager" decoding="async">
+      {{ partial "picture.html" (dict "src" $h.image "alt" "" "class" "absolute inset-0 w-full h-full object-cover opacity-50" "loading" "eager" "fetchpriority" "high" "sizes" "100vw") }}
       {{- end }}
       <div class="absolute inset-0 bg-gradient-to-r from-brand-midnight via-brand-midnight/80 to-transparent"></div>
     </div>
@@ -42,7 +43,12 @@
         <div class="lg:w-1/2 relative">
           {{- if $sec.img }}
           <div class="{{ $sec.media_class }}">
-            <img src="{{ $sec.img }}" alt="{{ $sec.alt }}" loading="lazy" decoding="async" class="{{ $sec.img_class }}" style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent">
+            {{- partial "picture.html" (dict
+                "src" $sec.img
+                "alt" $sec.alt
+                "class" $sec.img_class
+                "style" "position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent"
+                "sizes" "(max-width: 1024px) 92vw, 650px") }}
           </div>
           {{- end }}
         </div>

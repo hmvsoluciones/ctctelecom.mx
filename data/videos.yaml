@@ -1,0 +1,34 @@
+# Generado por tools/comprimir_videos.py
+videos:
+  "Banner-web-3.mp4":
+    poster: "/assets/Banner-web-3-poster.jpg"
+    width: 1280
+    height: 726
+  "TELECOM-FONDO.mp4":
+    poster: "/assets/TELECOM-FONDO-poster.jpg"
+    width: 1280
+    height: 726
+  "carrier-interconexion.mp4":
+    poster: "/assets/carrier-interconexion-poster.jpg"
+    width: 1280
+    height: 720
+  "data-center-connectivity.mp4":
+    poster: "/assets/data-center-connectivity-poster.jpg"
+    width: 1280
+    height: 720
+  "datos.mp4":
+    poster: "/assets/datos-poster.jpg"
+    width: 1280
+    height: 720
+  "soluciones-empresariales.mp4":
+    poster: "/assets/soluciones-empresariales-poster.jpg"
+    width: 1280
+    height: 720
+  "soporte2.mp4":
+    poster: "/assets/soporte2-poster.jpg"
+    width: 1280
+    height: 720
+  "telefonia.mp4":
+    poster: "/assets/telefonia-poster.jpg"
+    width: 1280
+    height: 720

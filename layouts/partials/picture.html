@@ -1,0 +1,32 @@
+{{- /*
+  Imagen responsive con variantes WebP.
+
+  Parámetros:
+    src      ruta original ("/assets/foto.jpg")
+    alt      texto alternativo
+    class    clases del <img>
+    style    estilos en línea del <img> (se pasan tal cual)
+    loading  "lazy" (por defecto) o "eager"
+    sizes    atributo sizes (por defecto un valor razonable para media columna)
+    fetchpriority  "high" para la imagen principal
+
+  Si la imagen no está en data/medios.yaml, se emite un <img> normal.
+*/ -}}
+{{- $src := .src -}}
+{{- $alt := .alt | default "" -}}
+{{- $class := .class | default "" -}}
+{{- $style := .style | default "" -}}
+{{- $loading := .loading | default "lazy" -}}
+{{- $sizes := .sizes | default "(max-width: 640px) 92vw, (max-width: 1024px) 48vw, 640px" -}}
+{{- $prio := .fetchpriority | default "" -}}
+{{- $name := path.Base $src -}}
+{{- $m := index hugo.Data.medios.medios $name -}}
+{{- if $m -}}
+{{- $stem := strings.TrimSuffix (path.Ext $name) $name -}}
+<picture>
+  <source type="image/webp" srcset="{{ range $i, $w := $m.widths }}{{ if $i }}, {{ end }}/assets/opt/{{ $stem }}-{{ $w }}.webp {{ $w }}w{{ end }}" sizes="{{ $sizes }}">
+  <img src="{{ $src }}" alt="{{ $alt }}" width="{{ $m.width }}" height="{{ $m.height }}" loading="{{ $loading }}" decoding="async"{{ with $class }} class="{{ . }}"{{ end }}{{ with $style }} style="{{ . | safeCSS }}"{{ end }}{{ with $prio }} fetchpriority="{{ . }}"{{ end }}>
+</picture>
+{{- else -}}
+<img src="{{ $src }}" alt="{{ $alt }}" loading="{{ $loading }}" decoding="async"{{ with $class }} class="{{ . }}"{{ end }}{{ with $style }} style="{{ . | safeCSS }}"{{ end }}>
+{{- end -}}

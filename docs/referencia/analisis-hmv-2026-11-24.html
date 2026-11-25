@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>Análisis de ctctelecom.mx — Ingeniería inversa y opciones de mejora</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #f4f6f8;
+        --surface: #ffffff;
+        --surface-2: #eef1f4;
+        --ink: #12212e;
+        --muted: #54626e;
+        --line: #d7dee4;
+        --navy: #0a2233;
+        --navy-2: #0e2f47;
+        --accent: #b3125f;
+        --accent-soft: #fbe7f1;
+        --teal: #0b6e6e;
+        --teal-soft: #e0f2f1;
+        --red: #b3261e;
+        --red-soft: #fbe9e7;
+        --amber: #9a5b00;
+        --amber-soft: #fdf0d5;
+        --green: #1e6b34;
+        --green-soft: #e3f2e6;
+        --slate-soft: #e8edf1;
+        --shadow: 0 1px 2px rgba(10, 34, 51, .06), 0 8px 24px rgba(10, 34, 51, .06);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0b141b;
+          --surface: #12202b;
+          --surface-2: #182a38;
+          --ink: #e8eef3;
+          --muted: #9db0bf;
+          --line: #26394a;
+          --navy: #081a29;
+          --navy-2: #0d2739;
+          --accent: #f06ba6;
+          --accent-soft: #3a1a2c;
+          --teal: #4fc4bc;
+          --teal-soft: #123a3a;
+          --red: #ff9d94;
+          --red-soft: #3d1f1c;
+          --amber: #f2c14e;
+          --amber-soft: #3a2f14;
+          --green: #7fd492;
+          --green-soft: #173324;
+          --slate-soft: #1d2f3e;
+          --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+        }
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Archivo", system-ui, sans-serif;
+        font-size: 16px;
+        line-height: 1.55;
+      }
+      .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .86em; word-break: break-all; }
+      a { color: var(--teal); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+      /* ---------- Hero ---------- */
+      .hero {
+        background: var(--navy);
+        color: #eaf2f8;
+        padding: 44px 0 36px;
+      }
+      .hero .kicker {
+        font-size: 12.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+        color: #8fd0cb; margin: 0 0 14px;
+      }
+      .hero h1 {
+        font-size: clamp(28px, 5vw, 44px); line-height: 1.12; font-weight: 800;
+        margin: 0 0 14px; letter-spacing: -.01em;
+      }
+      .hero h1 .site { color: #f06ba6; }
+      .hero .lede { font-size: clamp(16px, 2.4vw, 19px); color: #c3d5e2; max-width: 760px; margin: 0 0 26px; }
+      .hero .lede strong { color: #fff; }
+      .stat-row { display: flex; flex-wrap: wrap; gap: 10px; }
+      .stat {
+        background: var(--navy-2); border: 1px solid #1d435f; border-radius: 10px;
+        padding: 12px 16px; min-width: 128px;
+      }
+      .stat b { display: block; font-size: 24px; font-weight: 800; color: #fff; line-height: 1.1; }
+      .stat span { font-size: 12.5px; color: #9db8ca; }
+      .stat.alert b { color: #ff9d94; }
+      .hero .method { margin: 22px 0 0; font-size: 13.5px; color: #8fa9bc; max-width: 760px; }
+
+      /* ---------- Nav ---------- */
+      .toc {
+        position: sticky; top: 0; z-index: 20;
+        background: var(--surface); border-bottom: 1px solid var(--line);
+      }
+      .toc .wrap { display: flex; gap: 4px; overflow-x: auto; padding-top: 6px; padding-bottom: 6px; scrollbar-width: none; }
+      .toc .wrap::-webkit-scrollbar { display: none; }
+      .toc a {
+        flex: 0 0 auto; color: var(--ink); font-size: 14px; font-weight: 600;
+        padding: 10px 12px; border-radius: 8px; min-height: 40px; display: inline-flex; align-items: center;
+      }
+      .toc a:hover { background: var(--surface-2); text-decoration: none; }
+
+      /* ---------- Sections ---------- */
+      section { padding: 40px 0 8px; }
+      .sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; }
+      .sec-num {
+        font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 500;
+        color: var(--accent); background: var(--accent-soft); border-radius: 6px; padding: 3px 8px;
+      }
+      h2 { font-size: clamp(22px, 3.4vw, 29px); font-weight: 800; margin: 0; letter-spacing: -.01em; }
+      h3 { font-size: 18px; font-weight: 700; margin: 26px 0 10px; }
+      .sec-intro { color: var(--muted); max-width: 780px; margin: 4px 0 18px; }
+      p { margin: 0 0 12px; }
+      ul { margin: 0 0 14px; padding-left: 20px; }
+      li { margin-bottom: 6px; }
+
+      .card {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+        padding: 20px 22px; box-shadow: var(--shadow); margin-bottom: 16px;
+      }
+      .card h3 { margin-top: 0; }
+
+      /* Verdict */
+      .verdict {
+        border-left: 5px solid var(--accent);
+      }
+      .verdict p.big { font-size: 18.5px; line-height: 1.5; }
+      .brakes { counter-reset: brake; list-style: none; padding: 0; margin: 14px 0 4px; }
+      .brakes li {
+        counter-increment: brake; position: relative; padding: 10px 0 10px 44px; margin: 0;
+        border-top: 1px solid var(--line);
+      }
+      .brakes li:first-child { border-top: none; }
+      .brakes li::before {
+        content: counter(brake); position: absolute; left: 0; top: 10px;
+        width: 30px; height: 30px; border-radius: 50%;
+        background: var(--red-soft); color: var(--red);
+        font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center;
+      }
+
+      /* Scorecard */
+      .score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+      .score {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px;
+      }
+      .score .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+      .score .name { font-weight: 700; font-size: 16px; }
+      .score p { font-size: 14px; color: var(--muted); margin: 0; }
+      .badge {
+        font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+        padding: 4px 9px; border-radius: 999px; white-space: nowrap;
+      }
+      .b-good { background: var(--green-soft); color: var(--green); }
+      .b-mid { background: var(--amber-soft); color: var(--amber); }
+      .b-bad { background: var(--red-soft); color: var(--red); }
+      .b-na { background: var(--slate-soft); color: var(--muted); }
+
+      /* Tables */
+      .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
+      table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+      th, td { text-align: left; padding: 11px 14px; vertical-align: top; }
+      thead th { background: var(--surface-2); font-size: 12.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); }
+      tbody tr + tr td { border-top: 1px solid var(--line); }
+      td.page-name { font-weight: 600; white-space: nowrap; }
+
+      /* Service tree */
+      .tree { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+      .tree .branch { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+      .tree .branch h4 { margin: 0 0 4px; font-size: 16px; }
+      .tree .branch h4 a { font-weight: 700; }
+      .tree .branch ul { margin: 8px 0 0; padding-left: 18px; font-size: 14.5px; color: var(--muted); }
+      .tree .branch li { margin-bottom: 3px; }
+
+      blockquote {
+        margin: 0 0 12px; padding: 14px 18px; background: var(--surface-2);
+        border-radius: 10px; font-size: 17px; font-weight: 600; line-height: 1.45;
+      }
+      blockquote small { display: block; margin-top: 6px; font-size: 13px; font-weight: 500; color: var(--muted); }
+
+      .callout { border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
+      .callout.red { background: var(--red-soft); }
+      .callout.amber { background: var(--amber-soft); }
+      .callout.teal { background: var(--teal-soft); }
+      .callout h4 { margin: 0 0 8px; font-size: 16px; }
+      .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+
+      .addr-list { list-style: none; padding: 0; margin: 0; }
+      .addr-list li { padding: 10px 0; border-top: 1px solid var(--line); margin: 0; }
+      .addr-list li:first-child { border-top: none; padding-top: 2px; }
+      .addr-list .where { font-weight: 700; display: block; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 2px; }
+
+      /* Improvements */
+      .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 16px; }
+      .filters button {
+        font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+        min-height: 40px; padding: 8px 16px; border-radius: 999px;
+        border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+      }
+      .filters button[aria-pressed="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
+      @media (prefers-color-scheme: dark) {
+        .filters button[aria-pressed="true"] { background: #e8eef3; color: #12212e; border-color: #e8eef3; }
+      }
+      .prio {
+        font-size: 11.5px; font-weight: 800; letter-spacing: .04em; padding: 4px 9px; border-radius: 6px; white-space: nowrap;
+      }
+      .p0 { background: var(--red-soft); color: var(--red); }
+      .p1 { background: var(--amber-soft); color: var(--amber); }
+      .p2 { background: var(--teal-soft); color: var(--teal); }
+      .p3 { background: var(--slate-soft); color: var(--muted); }
+      .imp-table td.num { font-family: "IBM Plex Mono", monospace; color: var(--muted); }
+      .imp-table td.eff { white-space: nowrap; font-weight: 600; }
+      .imp-table .imp-name { font-weight: 600; }
+      .imp-table .imp-desc { color: var(--muted); font-size: 13.5px; display: block; margin-top: 2px; }
+      .legend { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+      tr[hidden] { display: none; }
+
+      /* Roadmap */
+      .road { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+      .road .step { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+      .road .step .when { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--accent); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; }
+      .road .step h4 { margin: 6px 0 8px; font-size: 16.5px; }
+      .road .step p { font-size: 14.5px; color: var(--muted); margin: 0; }
+
+      .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+      .option { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+      .option .tag { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); }
+      .option h4 { margin: 6px 0 10px; font-size: 18px; }
+      .option p, .option li { font-size: 14.5px; }
+      .option ul { color: var(--muted); }
+      .option.rec { border: 2px solid var(--teal); }
+
+      .sources { font-size: 14px; }
+      .sources li { margin-bottom: 5px; }
+      footer { padding: 36px 0 48px; color: var(--muted); font-size: 13.5px; }
+      footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
+
+      /* Mobile: improvements table becomes stacked cards */
+      @media (max-width: 640px) {
+        .toc { position: static; }
+        .toc .wrap { flex-wrap: wrap; overflow-x: visible; }
+        .imp-table, .imp-table tbody, .imp-table tr, .imp-table td { display: block; width: 100%; }
+        .imp-table thead { display: none; }
+        .imp-table tr { padding: 14px 16px; border-top: 1px solid var(--line); }
+        .imp-table tr:first-child { border-top: none; }
+        .imp-table td { border: none !important; padding: 3px 0; }
+        .imp-table td.num { display: none; }
+        .imp-table td.meta { display: inline-block; margin-right: 8px; }
+        td.page-name { white-space: normal; }
+        .card { padding: 16px; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <header class="hero">
+      <div class="wrap">
+        <p class="kicker">Análisis web · CTC Telecom · Para HMV Soluciones</p>
+        <h1>Ingeniería inversa de <span class="site">ctctelecom.mx</span>: qué tiene, qué le falta y cómo mejorarlo</h1>
+        <p class="lede">El sitio es <strong>una base válida</strong>: estructura, diseño y catálogo de servicios ya existen. Pero hoy <strong>informa más que vende</strong>: no necesita un rediseño desde cero, necesita una capa comercial encima y una limpieza urgente de datos de contacto antes de invertir en tráfico.</p>
+        <div class="stat-row">
+          <div class="stat"><b>12</b><span>páginas principales revisadas</span></div>
+          <div class="stat"><b>5</b><span>categorías de servicios B2B</span></div>
+          <div class="stat"><b>16</b><span>mejoras propuestas y priorizadas</span></div>
+          <div class="stat alert"><b>3</b><span>críticas (P0) de días, no de meses</span></div>
+          <div class="stat alert"><b>404</b><span>robots.txt y sitemap.xml hoy</span></div>
+        </div>
+        <p class="method">Análisis del 24 de noviembre de 2026, solo con información pública: visita en vivo en escritorio (1919 px) y lectura del índice web. Sin iniciar sesión, sin probar credenciales y sin enviar formularios. Lo que no se pudo verificar está marcado como tal al final.</p>
+      </div>
+    </header>
+
+    <nav class="toc" aria-label="Índice del informe">
+      <div class="wrap">
+        <a href="#veredicto">Veredicto</a>
+        <a href="#mapa">Mapa del sitio</a>
+        <a href="#mensaje">Mensaje</a>
+        <a href="#tecnologia">Tecnología</a>
+        <a href="#seo">SEO y seguridad</a>
+        <a href="#conversion">Conversión</a>
+        <a href="#replica">¿Se puede replicar?</a>
+        <a href="#mejoras">Mejoras</a>
+        <a href="#ruta">Ruta recomendada</a>
+        <a href="#fuentes">Fuentes</a>
+      </div>
+    </nav>
+
+    <main class="wrap">
+
+      <!-- ============ VEREDICTO ============ -->
+      <section id="veredicto">
+        <div class="sec-head"><span class="sec-num">01</span><h2>Veredicto y diagnóstico por área</h2></div>
+        <p class="sec-intro">El sitio se ve claro, coherente y profesional, con la propuesta correcta para un carrier B2B: red propia, fibra, baja latencia, SLA, NOC 24/7 y presencia en México y América Latina. El problema no es la apariencia: es que casi nada en la página está diseñado para convertir una visita en una cotización.</p>
+
+        <div class="card verdict">
+          <h3>Los 5 frenos comerciales principales</h3>
+          <ol class="brakes">
+            <li><strong>El hero de la home no tiene CTA comercial.</strong> Ofrece «Peering DB» y «Test de Velocidad» —herramientas para técnicos— pero no «Solicitar cotización».</li>
+            <li><strong>No hay forma de cualificar ni cotizar un lead B2B.</strong> El formulario solo pide nombre, email y mensaje. No hay verificador de cobertura, cotizador, precios orientativos, casos de éxito ni testimonios.</li>
+            <li><strong>Inconsistencias de datos que dañan la confianza:</strong> tres direcciones distintas de CDMX según la página, dos cifras de SLA (99.999% vs 99.99%) y teléfonos que cambian entre el sitio .mx, el residencial .com.mx y los documentos legales.</li>
+            <li><strong>SEO técnico débil:</strong> <span class="mono">robots.txt</span> y <span class="mono">sitemap.xml</span> devuelven 404, la URL de Soluciones Empresariales es <span class="mono">/integracion/</span> (no semántica) y hay contenido duplicado entre Data Center y Carrier.</li>
+            <li><strong>Página de Soporte casi vacía</strong> y contenido valioso —beneficios y casos de uso de cada servicio— escondido en acordeones colapsados que casi nadie abre.</li>
+          </ol>
+        </div>
+
+        <div class="score-grid">
+          <div class="score">
+            <div class="top"><span class="name">Diseño y UX</span><span class="badge b-good">Sólido</span></div>
+            <p>Identidad coherente (azul marino, rosa/magenta, morado), un H1 por página y plantilla predecible. Punto débil: las imágenes de la home cargan tarde y se ven como círculos vacíos en la primera carga. La vista móvil no se pudo verificar.</p>
+          </div>
+          <div class="score">
+            <div class="top"><span class="name">Contenido y mensaje</span><span class="badge b-mid">Aceptable</span></div>
+            <p>Propuesta de valor correcta y catálogo amplio, pero textos genéricos y repetidos entre servicios, sin precios, sin prueba social y sin versión del mensaje para un decisor no técnico.</p>
+          </div>
+          <div class="score">
+            <div class="top"><span class="name">SEO</span><span class="badge b-bad">Débil</span></div>
+            <p>Títulos bien orientados a palabras clave, pero sin robots.txt ni sitemap (404), una URL no semántica, contenido duplicado y páginas de servicio poco visibles en el buscador.</p>
+          </div>
+          <div class="score">
+            <div class="top"><span class="name">Conversión</span><span class="badge b-bad">Débil</span></div>
+            <p>WhatsApp, teléfono y correo están en todas las páginas, pero el hero no vende, el formulario no cualifica y no hay verificador de cobertura: el paso natural antes de cotizar en un carrier.</p>
+          </div>
+          <div class="score">
+            <div class="top"><span class="name">Seguridad</span><span class="badge b-na">Parcial</span></div>
+            <p>Todo carga por HTTPS. El certificado y las cabeceras de seguridad no se pudieron inspeccionar. Un hallazgo concreto: el botón «Peering DB» del hero enlaza por HTTP, no HTTPS.</p>
+          </div>
+          <div class="score">
+            <div class="top"><span class="name">Tecnología</span><span class="badge b-na">Inferida</span></div>
+            <p>Sin marcadores de WordPress ni de otro CMS: apariencia de sitio estático o a medida, con JavaScript para menús, acordeones y contadores. El stack real no quedó confirmado (ver sección 04).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ MAPA ============ -->
+      <section id="mapa">
+        <div class="sec-head"><span class="sec-num">02</span><h2>Mapa del sitio</h2></div>
+        <p class="sec-intro">Navegación principal: Inicio · Nosotros · Servicios (desplegable de dos niveles) · Soporte · Residencial (sale a otro dominio, ctctelecom.com.mx) · Contacto. Redes sociales —Facebook, Instagram, YouTube y LinkedIn— solo como iconos en cabecera y pie, y botón flotante de WhatsApp en todas las páginas.</p>
+
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Página</th><th>URL</th><th>Título (title)</th></tr></thead>
+            <tbody>
+              <tr><td class="page-name">Inicio</td><td><a class="mono" href="https://ctctelecom.mx/">ctctelecom.mx/</a></td><td>CTC Telecom | Red Propia en México y Conectividad Regional</td></tr>
+              <tr><td class="page-name">Datos</td><td><a class="mono" href="https://ctctelecom.mx/datos/">ctctelecom.mx/datos/</a></td><td>CTC Telecom | Datos - Internet Dedicado, SDN, MPLS y Lan To Lan | CTC Telecom</td></tr>
+              <tr><td class="page-name">Telefonía</td><td><a class="mono" href="https://ctctelecom.mx/telefonia/">ctctelecom.mx/telefonia/</a></td><td>CTC Telecom | Telefonía - PBX Cloud, SIP Trunk y UCaaS | CTC Telecom</td></tr>
+              <tr><td class="page-name">Data Center Connectivity</td><td><a class="mono" href="https://ctctelecom.mx/data-center/">ctctelecom.mx/data-center/</a></td><td>CTC Telecom | Data Center Connectivity - Alta Disponibilidad | CTC Telecom</td></tr>
+              <tr><td class="page-name">Soluciones Empresariales</td><td><a class="mono" href="https://ctctelecom.mx/integracion/">ctctelecom.mx/integracion/</a></td><td>CTC Telecom | Soluciones Empresariales - Seguridad y Red | CTC Telecom</td></tr>
+              <tr><td class="page-name">Carrier &amp; Interconnection</td><td><a class="mono" href="https://ctctelecom.mx/carrier-interconnection/">ctctelecom.mx/carrier-interconnection/</a></td><td>CTC Telecom | Carrier &amp; Interconnection - Hub Regional | CTC Telecom</td></tr>
+              <tr><td class="page-name">Nosotros</td><td><a class="mono" href="https://ctctelecom.mx/nosotros/">ctctelecom.mx/nosotros/</a></td><td>CTC Telecom | Nosotros - Operador con Infraestructura Propia | CTC Telecom</td></tr>
+              <tr><td class="page-name">Soporte</td><td><a class="mono" href="https://ctctelecom.mx/soporte/">ctctelecom.mx/soporte/</a></td><td>CTC Telecom | Soporte Técnico - Monitoreo NOC 24/7 | CTC Telecom</td></tr>
+              <tr><td class="page-name">Contacto</td><td><a class="mono" href="https://ctctelecom.mx/contacto/">ctctelecom.mx/contacto/</a></td><td>CTC Telecom | Contacto - Habla con un Especialista | CTC Telecom</td></tr>
+              <tr><td class="page-name">Looking Glass</td><td><a class="mono" href="https://ctctelecom.mx/looking-glass/">ctctelecom.mx/looking-glass/</a></td><td>CTC Telecom | Looking Glass - Herramientas de Red | CTC Telecom</td></tr>
+              <tr><td class="page-name">Test de Velocidad</td><td><a class="mono" href="https://ctctelecom.mx/speedtest.html">ctctelecom.mx/speedtest.html</a></td><td>Archivo .html estático; título no verificado</td></tr>
+              <tr><td class="page-name">Residencial (sitio aparte)</td><td><a class="mono" href="https://ctctelecom.com.mx/">ctctelecom.com.mx</a></td><td>CTC Telecom Residencial</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="legend" style="margin-top:10px;">Además, el pie enlaza páginas legales y regulatorias: Recomendaciones de seguridad, Código de prácticas comerciales, Manual de pagos, Neutralidad de red, Aviso de privacidad, Política de cookies, Carta de derechos mínimos, Términos y condiciones e Infografía de derechos mínimos.</p>
+
+        <h3>Árbol de servicios (menú Servicios)</h3>
+        <div class="tree">
+          <div class="branch">
+            <h4><a href="https://ctctelecom.mx/datos/">Datos</a></h4>
+            <ul><li>Internet Dedicado</li><li>SDN</li><li>MPLS</li><li>SD-WAN + MPLS</li><li>Lan To Lan</li></ul>
+          </div>
+          <div class="branch">
+            <h4><a href="https://ctctelecom.mx/telefonia/">Telefonía</a></h4>
+            <ul><li>Telefonía en la Nube</li><li>SIP Trunking Internacional</li><li>UCaaS</li><li>Telefonía Celular</li><li>Telefonía Integrada con CRM/APIs</li><li>Roaming Internacional</li></ul>
+          </div>
+          <div class="branch">
+            <h4><a href="https://ctctelecom.mx/data-center/">Data Center Connectivity</a></h4>
+            <ul><li>Cross Connects</li><li>Data Center Interconnect (DCI)</li><li>Acceso a Ecosistemas Cloud</li><li>Arquitectura Redundante</li></ul>
+          </div>
+          <div class="branch">
+            <h4><a href="https://ctctelecom.mx/integracion/">Soluciones Empresariales</a></h4>
+            <ul><li>Infraestructura de Servidores</li><li>Seguridad de Red (Fortinet)</li><li>Infraestructura de Red (Huawei)</li></ul>
+          </div>
+          <div class="branch">
+            <h4><a href="https://ctctelecom.mx/carrier-interconnection/">Carrier &amp; Interconnection</a></h4>
+            <ul><li>Carrier Interconnection</li><li>Data Center Interconnect (DCI)</li><li>Cloud Connect</li><li>Peering &amp; Internet Exchange</li><li>CDN &amp; Content Delivery</li></ul>
+          </div>
+        </div>
+
+        <div class="callout amber">
+          <h4>Observaciones de estructura</h4>
+          <ul>
+            <li>Las 5 categorías son páginas que agrupan sus subservicios como secciones con acordeones: <strong>no hay una página propia por subservicio</strong> (no existe, por ejemplo, una URL de Internet Dedicado). Eso limita el posicionamiento por servicio y el poder mandar a un prospecto el enlace exacto de lo que busca.</li>
+            <li>Hay <strong>solapes</strong>: DCI aparece en Data Center y en Carrier; «Acceso a Ecosistemas Cloud» y «Cloud Connect» son prácticamente el mismo servicio en dos páginas distintas.</li>
+            <li>El menú de dos niveles funciona en escritorio, pero el segundo nivel es estrecho y el texto de los submenús se ve con poco contraste sobre el hero.</li>
+            <li>No hay buscador interno, blog, casos de éxito, testimonios, logos de clientes, cotizador, verificador de cobertura ni portal de cliente visible.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ============ MENSAJE ============ -->
+      <section id="mensaje">
+        <div class="sec-head"><span class="sec-num">03</span><h2>Contenido y mensaje</h2></div>
+        <p class="sec-intro">El mensaje central está bien elegido para un carrier B2B. El problema es de profundidad: habla solo al técnico, repite las mismas características en todos los servicios y no ofrece ninguna prueba de que otros ya compraron.</p>
+
+        <blockquote>«Red propia en México. Presencia Regional en América Latina.»
+          <small>H1 de la home. Subtítulo: «Arquitectura IP Avanzada. Operación bajo estándares internacionales enfocada en la excelencia técnica y alta disponibilidad para su empresa.»</small>
+        </blockquote>
+        <blockquote>«Construimos la red. Nosotros la operamos.»
+          <small>Nosotros. Eslogan de marca: «Cambia las reglas, elige diferente».</small>
+        </blockquote>
+
+        <div class="card">
+          <h3>Lo que la home promete, en cifras</h3>
+          <ul>
+            <li><strong>4 tarjetas:</strong> Operación en 32 estados de México · Backbone y red propia · SLA comprometidos (99.999% en backbone) · Presencia regional en América Latina.</li>
+            <li><strong>Métricas:</strong> latencia promedio &lt; 8 ms · uptime de backbone 99.99% · 4,200+ rutas BGP activas.</li>
+            <li><strong>Interconexión internacional</strong> en Tijuana, Ciudad Juárez, Laredo y McAllen; acceso directo a ecosistemas cloud y data centers neutrales.</li>
+            <li><strong>Mapa de red</strong> con POPs en México, EE. UU. (Los Ángeles, Phoenix, El Paso, Dallas, Ashburn VA, Miami, McAllen, Eagle Pass), Europa (Londres, París, Ámsterdam, Fráncfort) y Asia (Tokio, Hong Kong, Singapur).</li>
+            <li><strong>Sedes estratégicas:</strong> CDMX, Santiago, Bogotá, Buenos Aires, Lima y São Paulo.</li>
+          </ul>
+          <p style="margin-bottom:0;"><strong>Ojo con los contadores animados:</strong> la animación es tan lenta que durante la visita los valores se capturaron a mitad de conteo (en una captura ~24,000 km de fibra y 525 POPs; en otra anterior, 7,000–8,000 km y 170–192 POPs). El valor final no quedó fijado de forma estable: quien capture la página a mitad de animación ve cifras que cambian entre visitas.</p>
+        </div>
+
+        <h3>¿A quién se dirige?</h3>
+        <p>A empresas con operaciones críticas y organizaciones transnacionales: operadores/carriers, grandes empresas multisede y compañías que interconectan data centers, nubes y sedes. El tono es técnico (BGP, MPLS, SD-WAN, DCI, peering, NOC) y presupone un comprador que ya entiende esos términos. <strong>No hay una versión del mensaje para un decisor no técnico</strong> (dirección general, finanzas) ni contenido por sector (manufactura, retail, gobierno, salud).</p>
+
+        <h3>Debilidades de contenido</h3>
+        <ul>
+          <li><strong>Sin precios ni rangos</strong> en ningún servicio B2B. El único precio visible en el ecosistema es el residencial (300–1,200 MXN/mes, visto en Instagram/buscador, no en el propio sitio .mx).</li>
+          <li><strong>Sin prueba social:</strong> ni casos de éxito, ni clientes, ni testimonios, ni certificaciones visibles.</li>
+          <li><strong>Contenido escondido:</strong> en cada subservicio solo «Características clave» está expandido; «Beneficios para tu empresa», «Casos de uso» y «¿Por qué con CTC Telecom?» están colapsados por defecto.</li>
+          <li><strong>Textos repetitivos:</strong> casi todos los subservicios repiten las mismas 6 características («baja latencia», «alta disponibilidad», «monitoreo continuo…»), lo que diluye la diferenciación.</li>
+          <li><strong>Errores de detalle:</strong> en Nosotros aparece «Scalabilidad» (en inglés) en el ADN, y la sede de Argentina dice «Maipú 1210, Piso 8, C1210 Gerli, Cdad. Autónoma de Buenos Aires» — Gerli no pertenece a CABA.</li>
+        </ul>
+      </section>
+
+      <!-- ============ TECNOLOGÍA ============ -->
+      <section id="tecnologia">
+        <div class="sec-head"><span class="sec-num">04</span><h2>Tecnología inferible (ingeniería inversa pública)</h2></div>
+        <p class="sec-intro">Todo lo de esta sección es inferencia a partir de lo visible en el navegador y en las URLs. No se inspeccionó el servidor ni el código fuente, así que no debe tomarse como un inventario auditado.</p>
+
+        <div class="card">
+          <h3>Lo que se puede deducir</h3>
+          <ul>
+            <li><strong>HTTPS en todo el sitio</strong> y URLs limpias con barra final (<span class="mono">/datos/</span>, <span class="mono">/telefonia/</span>…). Convive un archivo estático <span class="mono">/speedtest.html</span>.</li>
+            <li><strong>Sin marcadores de WordPress</strong> (<span class="mono">/wp-content/</span>, <span class="mono">/wp-json/</span>) ni de otro CMS en las URLs visitadas: la apariencia es de <strong>sitio estático o hecho a medida</strong> (o con generador estático), con JavaScript para menús, acordeones y contadores animados.</li>
+            <li>Los recursos viven en <span class="mono">/assets/</span> (p. ej. <span class="mono">assets/internet-dedicado.png</span>). Los nombres de archivo son dispares y algunos poco profesionales (<span class="mono">TTT.jpg</span>, <span class="mono">00-S-WAN-MPLS.png</span>).</li>
+            <li><strong>Terceros visibles:</strong> WhatsApp (<span class="mono">wa.me</span>), PeeringDB y Google Maps (enlaces «Ver ubicación» / «Ver en Google Maps»), más las redes sociales. No se pudo confirmar Google Analytics ni Tag Manager en el sitio actual.</li>
+            <li><strong>Red propia (dato de contexto, del índice):</strong> el dominio se asocia al AS270165 «Servicios Best CTC S.A. de C.V.» (LACNIC) según ipregistry/ipinfo, mientras el enlace de PeeringDB del hero apunta a AS41652. La relación entre ambas numeraciones no quedó aclarada.</li>
+            <li><strong>Razón social</strong> según el Aviso de Privacidad: Servicios Giga Best, SAPI de CV.</li>
+          </ul>
+        </div>
+
+        <div class="callout amber">
+          <h4>Indicio histórico — no usar como stack confirmado</h4>
+          <p>Un perfil de RocketReach, posiblemente desactualizado, atribuye a CTC Telecom ASP.NET, Bootstrap, Nginx, Cloudflare CDN, Google Analytics, Google Tag Manager, SendGrid, jQuery, Font Awesome y Plesk. Contradice en parte la apariencia actual de sitio estático; se cita solo como indicio de una posible versión anterior. <a href="https://rocketreach.co/ctc-telecom-technology-stack_b4461895faff6a72">Ver perfil en RocketReach</a>.</p>
+        </div>
+      </section>
+
+      <!-- ============ SEO Y SEGURIDAD ============ -->
+      <section id="seo">
+        <div class="sec-head"><span class="sec-num">05</span><h2>SEO y seguridad</h2></div>
+
+        <h3>SEO</h3>
+        <ul>
+          <li><strong>Títulos correctos y descriptivos</strong> en las 9 páginas principales, bien orientados a palabras clave (internet dedicado, MPLS, SD-WAN, SIP Trunk, UCaaS, NOC 24/7), aunque con el patrón repetitivo «CTC Telecom | … | CTC Telecom».</li>
+          <li><strong><span class="mono">robots.txt</span> y <span class="mono">sitemap.xml</span> devuelven 404</strong> (verificado el 24-11-2026). Sin sitemap detectable, el rastreo se dificulta: es un hallazgo grave para un sitio que quiere captar demanda B2B por buscador.</li>
+          <li><strong>URLs mayoritariamente semánticas</strong>, con dos excepciones: <span class="mono">/integracion/</span> para «Soluciones Empresariales» (el slug no corresponde al nombre visible ni a ninguna palabra clave) y <span class="mono">/speedtest.html</span> con extensión .html.</li>
+          <li><strong>Contenido duplicado o fino:</strong> DCI y Cloud Connect duplicados entre <span class="mono">/data-center/</span> y <span class="mono">/carrier-interconnection/</span>; <span class="mono">/soporte/</span> tiene apenas un par de párrafos; los acordeones colapsados ocultan contenido que Google puede ponderar menos.</li>
+          <li><strong>Indexación pobre (índice):</strong> el buscador muestra pocas URLs del dominio y las páginas de servicios no aparecen de forma destacada; una búsqueda <span class="mono">site:ctctelecom.mx</span> no devolvió resultados en la consulta realizada.</li>
+          <li><strong>Meta descripciones y datos estructurados:</strong> no verificables con las herramientas disponibles (no se pudo inspeccionar el <span class="mono">&lt;head&gt;</span>). Verificación pendiente de 5 minutos en el código fuente.</li>
+        </ul>
+
+        <h3>Seguridad</h3>
+        <ul>
+          <li><strong>HTTPS correcto</strong> en todas las páginas visitadas.</li>
+          <li><strong>Certificado y cabeceras de seguridad</strong> (HSTS, CSP, X-Frame-Options): no verificables con las herramientas disponibles; verificación pendiente de 2 minutos con un comprobador en línea.</li>
+          <li><strong>Hallazgo concreto:</strong> el botón «Peering DB» del hero enlaza por <strong>HTTP, no HTTPS</strong> (<span class="mono">http://peeringdb.com/net/41652</span>). Es menor, pero conviene corregirlo.</li>
+          <li><strong>Looking Glass</strong> (<span class="mono">/looking-glass/</span>): describe herramientas de ping/traceroute sobre el backbone; en el texto indexado no se aprecian los campos interactivos, así que no se pudo verificar si la herramienta funciona o es solo descriptiva.</li>
+          <li>El formulario de contacto <strong>no muestra aviso de privacidad junto a los campos</strong> en la vista observada. No se envió nada, por lo que no se verificó su comportamiento ni el destino de los datos.</li>
+        </ul>
+      </section>
+
+      <!-- ============ CONVERSIÓN ============ -->
+      <section id="conversion">
+        <div class="sec-head"><span class="sec-num">06</span><h2>Contacto y conversión</h2></div>
+        <p class="sec-intro">Los canales existen y se repiten en cabecera, pie y todas las páginas. El problema está en la calidad de los datos —que no coinciden entre sí— y en que ningún canal cualifica al prospecto antes de llegar a ventas.</p>
+
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Canal</th><th>Dato publicado</th></tr></thead>
+            <tbody>
+              <tr><td class="page-name">WhatsApp (ventas)</td><td>55 1033 2515 y 55 1033 2514 · Botón flotante: <a class="mono" href="https://wa.me/525510332515">wa.me/525510332515</a> («¡Habla con un asesor!»)</td></tr>
+              <tr><td class="page-name">Conmutador</td><td>55 8880 8200 y 55 8880 8282</td></tr>
+              <tr><td class="page-name">Email de ventas</td><td>ventas@ctctelecom.mx</td></tr>
+              <tr><td class="page-name">Email de soporte</td><td>soporte@ctctelecom.com.mx (Aviso de Privacidad — ojo: dominio <strong>.com.mx</strong>, distinto al .mx del resto)</td></tr>
+              <tr><td class="page-name">Teléfono de privacidad</td><td>+52 55 8880 8383 (Aviso de Privacidad)</td></tr>
+              <tr><td class="page-name">Formulario</td><td>Solo en <span class="mono">/contacto/</span>: Nombre, Email, Mensaje + «Enviar mensaje»</td></tr>
+              <tr><td class="page-name">Redes</td><td>Facebook, Instagram, YouTube, LinkedIn (solo iconos)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>CTAs por página</h3>
+        <ul>
+          <li><strong>Home:</strong> «Peering DB» (externo) y «Test de Velocidad». <strong>No hay CTA comercial en el hero.</strong> «Consulta disponibilidad de servicio» aparece como texto dentro de una tarjeta, sin enlace claro.</li>
+          <li><strong>Páginas de servicio:</strong> «Realiza una cotización» → <span class="mono">/contacto/</span> (no preselecciona el servicio desde el que se hace clic) y «Soporte técnico» → <span class="mono">/soporte/</span>.</li>
+          <li><strong>Soporte:</strong> un único botón, «Soporte WhatsApp».</li>
+          <li><strong>Contacto:</strong> banner flotante «Solicita una cotización para tu empresa 55 1033 2515» y tarjetas por país con «Ver en Google Maps».</li>
+        </ul>
+
+        <div class="callout red">
+          <h4>Crítico para la confianza: tres direcciones de CDMX distintas</h4>
+          <ul class="addr-list">
+            <li><span class="where">Pie de todas las páginas</span>Montecito 38, Piso 27, Oficina 23, Nápoles, Benito Juárez, 03810 CDMX.</li>
+            <li><span class="where">Cuerpo de Contacto</span>Av. Paseo de la Reforma 342, Piso 26, Ofna 1, Juárez, Cuauhtémoc, CP 06600 CDMX.</li>
+            <li><span class="where">Aviso de Privacidad (oct. 2023)</span>Av. Paseo de la Reforma 291, interior 2601, San Gabriel, Álvaro Obregón, CDMX, CP 01310.</li>
+          </ul>
+          <p style="margin-top:10px;">Además: el SLA se anuncia como <strong>99.999%</strong> en una tarjeta de la home y como <strong>99.99%</strong> en la sección de red y en Nosotros; el sitio residencial (.com.mx) usa otros teléfonos (55 8880 8382 / 8383 / 8384); en Contacto, Argentina y Brasil comparten el mismo número base (3989 9602, con distinto prefijo), y Chile aparecía en el índice con el número mexicano 55 1033 2515 mientras en la visita en vivo figuraba +56 2 3210 8898. Hay que confirmar cuál dato es el vigente en cada caso.</p>
+        </div>
+
+        <h3>Problemas de conversión</h3>
+        <ul>
+          <li><strong>Formulario B2B insuficiente:</strong> 3 campos. Falta empresa, teléfono, servicio de interés, ciudad/ubicación y ancho de banda aproximado. Un lead que llega desde «Internet Dedicado» tiene que escribir a mano qué quiere, y ventas no puede priorizarlo.</li>
+          <li><strong>Sin cualificación previa:</strong> no hay verificador de cobertura/factibilidad —la home solo dice «* consulta nuestras zonas de cobertura»— pese a que el propio sitio insiste en la cobertura por zonas. Es el paso natural antes de una cotización.</li>
+          <li><strong>Sin seguimiento medible visible:</strong> no se pudo confirmar analítica ni eventos de conversión en el sitio actual.</li>
+        </ul>
+      </section>
+
+      <!-- ============ ¿SE PUEDE REPLICAR? ============ -->
+      <section id="replica">
+        <div class="sec-head"><span class="sec-num">07</span><h2>¿Se puede hacer ingeniería inversa y replicarlo?</h2></div>
+        <p class="sec-intro">Sí, en lo que toca a la parte pública — y no hace falta partir de cero para mejorarla. Esto es lo que la evidencia pública permite concluir:</p>
+
+        <div class="card">
+          <h3>Qué se puede reconstruir desde fuera</h3>
+          <ul>
+            <li><strong>La arquitectura completa:</strong> mapa de páginas, árbol de servicios de 5 categorías, navegación y páginas legales están a la vista y documentados en este informe.</li>
+            <li><strong>La plantilla:</strong> cada página de servicio sigue el mismo patrón (hero → subservicios con acordeones), así que el sitio es reproducible página por página sin sorpresas.</li>
+            <li><strong>El contenido:</strong> textos, propuesta de valor, métricas públicas y datos de contacto son públicos y están recopilados arriba.</li>
+            <li><strong>La tecnología aparente:</strong> sin CMS detectable y con pinta de sitio estático o a medida, no hay una plataforma propietaria que bloquee una reconstrucción equivalente.</li>
+          </ul>
+          <h3>Qué NO se puede (ni se debe) obtener desde fuera</h3>
+          <ul>
+            <li>El código fuente del servidor, el hosting real y la analítica: no confirmados con información pública.</li>
+            <li>El destino del formulario de contacto (¿correo, CRM?) y cualquier sistema interno: fuera del alcance público.</li>
+            <li>Los datos reales de cobertura por zona, necesarios para un verificador de factibilidad: los tiene que aportar CTC.</li>
+          </ul>
+          <p style="margin-bottom:0;">En la práctica hay tres caminos, y no son excluyentes: se ejecutan en orden.</p>
+        </div>
+
+        <div class="options">
+          <div class="option rec">
+            <span class="tag">Opción A · Recomendada primero</span>
+            <h4>Mejorar el sitio actual</h4>
+            <p>Trabajar sobre el sitio que ya existe: quick wins de datos, CTA, SEO técnico y formulario B2B (mejoras 1–6 y 10 de la tabla).</p>
+            <ul>
+              <li>Esfuerzo: días a 2–3 semanas</li>
+              <li>Riesgo: bajo, cambios puntuales</li>
+              <li>Resultado: el sitio empieza a vender sin tocar su estructura</li>
+            </ul>
+          </div>
+          <div class="option">
+            <span class="tag">Opción B · Mes 2</span>
+            <h4>Réplica mejorada por capas</h4>
+            <p>Construir encima lo que hoy no existe: verificador de cobertura, página propia por subservicio clave y medición de conversiones (mejoras 7, 9 y 15).</p>
+            <ul>
+              <li>Esfuerzo: 1–2 semanas por pieza</li>
+              <li>Requiere: datos de cobertura y contenidos que defina CTC</li>
+              <li>Resultado: leads cualificados y enlaces comerciales por servicio</li>
+            </ul>
+          </div>
+          <div class="option">
+            <span class="tag">Opción C · Solo con métricas</span>
+            <h4>Rediseño mayor</h4>
+            <p>Nueva arquitectura de información organizada por «problema a resolver» (conectar sedes, conectar a la nube, voz empresarial, ser carrier), cotizador guiado por pasos, mapa de cobertura interactivo y revisión móvil completa (mejora 16).</p>
+            <ul>
+              <li>Esfuerzo: 3–6 semanas</li>
+              <li>Solo tiene sentido cuando A y B ya generan datos de conversión reales</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ MEJORAS ============ -->
+      <section id="mejoras">
+        <div class="sec-head"><span class="sec-num">08</span><h2>Las 16 mejoras, priorizadas</h2></div>
+        <p class="sec-intro">Impacto estimado sobre captación de leads B2B y confianza. Filtra por prioridad para ver el plan por oleadas.</p>
+        <p class="legend"><strong>Esfuerzo:</strong> XS = horas · S = 1–3 días · M = 1–2 semanas · L = 3–6 semanas &nbsp;|&nbsp; <strong>P0</strong> crítica · <strong>P1</strong> alta · <strong>P2</strong> media · <strong>P3</strong> rediseño</p>
+
+        <div class="filters" role="group" aria-label="Filtrar mejoras por prioridad">
+          <button type="button" data-filter="all" aria-pressed="true">Todas (16)</button>
+          <button type="button" data-filter="p0" aria-pressed="false">P0 · Críticas (3)</button>
+          <button type="button" data-filter="p1" aria-pressed="false">P1 · Altas (8)</button>
+          <button type="button" data-filter="p2" aria-pressed="false">P2 · Medias (4)</button>
+          <button type="button" data-filter="p3" aria-pressed="false">P3 · Rediseño (1)</button>
+        </div>
+
+        <div class="table-scroll">
+          <table class="imp-table">
+            <thead><tr><th>#</th><th>Mejora</th><th>Prioridad</th><th>Esfuerzo</th><th>Impacto</th></tr></thead>
+            <tbody>
+              <tr data-prio="p0"><td class="num">1</td><td><span class="imp-name">Unificar NAP (nombre, dirección, teléfonos) en todo el sitio y documentos</span><span class="imp-desc">Una sola dirección de CDMX, un solo juego de teléfonos y un solo email de soporte; corregir también el Aviso de Privacidad y el sitio residencial.</span></td><td class="meta"><span class="prio p0">P0 · Crítica</span></td><td class="meta eff">XS</td><td>Alto — elimina la principal señal de desconfianza</td></tr>
+              <tr data-prio="p0"><td class="num">2</td><td><span class="imp-name">CTA comercial en el hero de la home</span><span class="imp-desc">«Solicitar cotización» (a /contacto/) como botón principal; PeeringDB y Test de Velocidad quedan como enlaces secundarios.</span></td><td class="meta"><span class="prio p0">P0 · Crítica</span></td><td class="meta eff">XS</td><td>Alto — hoy el hero no vende</td></tr>
+              <tr data-prio="p0"><td class="num">3</td><td><span class="imp-name">Crear robots.txt y sitemap.xml</span><span class="imp-desc">Y enlazar el sitemap en robots.txt y en Search Console.</span></td><td class="meta"><span class="prio p0">P0 · Crítica</span></td><td class="meta eff">XS</td><td>Alto — hoy el sitio es casi invisible para rastreadores</td></tr>
+              <tr data-prio="p1"><td class="num">4</td><td><span class="imp-name">Ampliar el formulario a lead B2B</span><span class="imp-desc">Empresa, teléfono/WhatsApp, servicio de interés (desplegable con los 5 grupos), ciudad y mensaje; que «Realiza una cotización» preseleccione el servicio desde el que se hace clic.</span></td><td class="meta"><span class="prio p1">P1 · Alta</span></td><td class="meta eff">S</td><td>Alto — cualifica y prioriza leads</td></tr>
+              <tr data-prio="p1"><td class="num">5</td><td><span class="imp-name">Unificar la cifra de SLA y fijar los contadores</span><span class="imp-desc">Una sola cifra (99.99% vs 99.999%) y contadores de la home con valores estáticos o animación corta.</span></td><td class="meta"><span class="prio p1">P1 · Alta</span></td><td class="meta eff">XS</td><td>Medio-Alto — credibilidad de las cifras</td></tr>
+              <tr data-prio="p1"><td class="num">6</td><td><span class="imp-name">Corregir el enlace PeeringDB a HTTPS y revisar teléfonos LATAM</span><span class="imp-desc">Argentina/Brasil comparten número base; confirmar el vigente de Chile.</span></td><td class="meta"><span class="prio p1">P1 · Alta</span></td><td class="meta eff">XS</td><td>Medio</td></tr>
+              <tr data-prio="p1"><td class="num">7</td><td><span class="imp-name">Verificador de cobertura / factibilidad</span><span class="imp-desc">«¿Llegamos a tu zona?»: CP o ciudad → respuesta y paso directo a cotización. Es el lead magnet natural de un carrier.</span></td><td class="meta"><span class="prio p1">P1 · Alta</span></td><td class="meta eff">M</td><td>Alto — convierte visitas en leads cualificados</td></tr>
+              <tr data-prio="p1"><td class="num">8</td><td><span class="imp-name">Optimizar imágenes y medir rendimiento</span><span class="imp-desc">Compresión, dimensiones reales, WebP y placeholder; medir con PageSpeed. Las imágenes de la home tardan visiblemente en cargar.</span></td><td class="meta"><span class="prio p1">P1 · Alta</span></td><td class="meta eff">S</td><td>Medio-Alto — primera impresión y SEO</td></tr>
+              <tr data-prio="p1"><td class="num">9</td><td><span class="imp-name">Página por subservicio clave</span><span class="imp-desc">Al menos Internet Dedicado, MPLS/SD-WAN, SIP Trunking, DCI y Carrier, con URL propia (o anclas profundas desde el menú); resolver la duplicidad DCI/Cloud entre Data Center y Carrier.</span></td><td class="meta"><span class="prio p1">P1 · Alta</span></td><td class="meta eff">M</td><td>Alto — SEO y enlaces comerciales concretos</td></tr>
+              <tr data-prio="p1"><td class="num">10</td><td><span class="imp-name">Renombrar /integracion/ a /soluciones-empresariales/</span><span class="imp-desc">Con redirección 301 desde la URL antigua.</span></td><td class="meta"><span class="prio p1">P1 · Alta</span></td><td class="meta eff">XS</td><td>Medio — SEO y claridad</td></tr>
+              <tr data-prio="p1"><td class="num">11</td><td><span class="imp-name">Meta descripciones y datos estructurados</span><span class="imp-desc">Descripciones únicas por página con CTA; Schema Organization + FAQ; verificar certificado y cabeceras de seguridad.</span></td><td class="meta"><span class="prio p1">P1 · Alta</span></td><td class="meta eff">S</td><td>Medio</td></tr>
+              <tr data-prio="p2"><td class="num">12</td><td><span class="imp-name">Reforzar /soporte/</span><span class="imp-desc">Canales de reporte (teléfono, email, WhatsApp), portal/ticket, estado de la red y FAQ. Hoy es una página de dos párrafos.</span></td><td class="meta"><span class="prio p2">P2 · Media</span></td><td class="meta eff">S–M</td><td>Medio — retiene clientes y descarga al NOC</td></tr>
+              <tr data-prio="p2"><td class="num">13</td><td><span class="imp-name">Mostrar el contenido de los acordeones y añadir casos de éxito</span><span class="imp-desc">Beneficios y casos de uso visibles sin clic (o al menos el primero expandido) y 2–3 casos con cliente, reto y resultado.</span></td><td class="meta"><span class="prio p2">P2 · Media</span></td><td class="meta eff">M</td><td>Medio-Alto — prueba social, hoy inexistente</td></tr>
+              <tr data-prio="p2"><td class="num">14</td><td><span class="imp-name">Sección «por sector»</span><span class="imp-desc">Manufactura, retail, gobierno y servicios financieros, con retos y arquitectura recomendada, para hablarle al decisor no técnico.</span></td><td class="meta"><span class="prio p2">P2 · Media</span></td><td class="meta eff">M</td><td>Medio</td></tr>
+              <tr data-prio="p2"><td class="num">15</td><td><span class="imp-name">Medición de conversiones</span><span class="imp-desc">Confirmar/implementar GA4 + Tag Manager, eventos de clic en WhatsApp/teléfono/formulario y un CRM conectado al formulario. Sin esto, el GAP no podrá medirse.</span></td><td class="meta"><span class="prio p2">P2 · Media</span></td><td class="meta eff">S</td><td>Alto a medio plazo</td></tr>
+              <tr data-prio="p3"><td class="num">16</td><td><span class="imp-name">Rediseño mayor (solo tras los quick wins)</span><span class="imp-desc">Nueva arquitectura por «problema a resolver», cotizador guiado por pasos, mapa de cobertura interactivo y versión móvil revisada de principio a fin.</span></td><td class="meta"><span class="prio p3">P3 · Rediseño</span></td><td class="meta eff">L</td><td>Alto, pero solo si lo anterior ya está</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ RUTA ============ -->
+      <section id="ruta">
+        <div class="sec-head"><span class="sec-num">09</span><h2>Ruta recomendada para HMV</h2></div>
+        <p class="sec-intro">La secuencia importa más que el tamaño del proyecto: primero confianza y rastreo, después captación, y el rediseño solo cuando haya métricas reales que lo justifiquen.</p>
+        <div class="road">
+          <div class="step">
+            <span class="when">Semana 1 · Quick wins</span>
+            <h4>Mejoras 1, 2, 3, 5, 6 y 10</h4>
+            <p>Limpieza de datos de contacto, CTA comercial en el hero, SEO técnico básico y cifra de SLA única. Costo bajo, riesgo bajo, efecto inmediato en confianza y rastreo.</p>
+          </div>
+          <div class="step">
+            <span class="when">Semanas 2–3</span>
+            <h4>Mejoras 4, 8, 11 y 12</h4>
+            <p>Formulario B2B que cualifica, optimización de imágenes y rendimiento, meta descripciones y una página de Soporte que sí ayude.</p>
+          </div>
+          <div class="step">
+            <span class="when">Mes 2</span>
+            <h4>Mejoras 7 y 9</h4>
+            <p>Verificador de cobertura y páginas por servicio. Requieren definir con el negocio los datos de cobertura y los contenidos de cada servicio.</p>
+          </div>
+          <div class="step">
+            <span class="when">Después</span>
+            <h4>Mejoras 13–16</h4>
+            <p>Casos de éxito, contenido por sector, medición completa y —solo con datos de conversión en la mano— la decisión del rediseño mayor.</p>
+          </div>
+        </div>
+
+        <h3 style="margin-top:32px;">Lo que no se pudo verificar (preguntas abiertas para CTC)</h3>
+        <ul>
+          <li><strong>Meta descripciones, datos estructurados, certificado SSL y cabeceras de seguridad:</strong> no inspeccionables con las herramientas disponibles. Verificación estimada: 10 minutos en el código fuente y un comprobador en línea.</li>
+          <li><strong>Vista móvil y rendimiento medido (Core Web Vitals):</strong> solo se verificó escritorio a 1919 px; la lentitud de imágenes es percibida, no medida.</li>
+          <li><strong>Stack tecnológico actual</strong> (CMS, hosting, analítica): no confirmado; el perfil de terceros disponible puede corresponder a una versión anterior.</li>
+          <li><strong>Valores finales de los contadores de la home</strong> (km de fibra y POPs): la animación lenta impidió fijarlos; se observaron valores intermedios de hasta ~24,000 km y 525 POPs, con SLA en 99.99%.</li>
+          <li><strong>Funcionamiento del Looking Glass y del Test de Velocidad:</strong> no se probaron; el texto indexado del Looking Glass es solo descriptivo.</li>
+          <li><strong>Destino del formulario de contacto</strong> (a qué correo o CRM llega, aviso de privacidad al enviar): no se envió ningún formulario, conforme al alcance del análisis.</li>
+          <li><strong>Datos LATAM:</strong> confirmar los teléfonos de Chile, Argentina y Brasil y la dirección de la sede de Argentina.</li>
+        </ul>
+      </section>
+
+      <!-- ============ FUENTES ============ -->
+      <section id="fuentes">
+        <div class="sec-head"><span class="sec-num">10</span><h2>Fuentes</h2></div>
+        <p class="sec-intro">Páginas revisadas en vivo el 24-11-2026 con navegador de investigación, o mediante lectura de texto/índice según se indica.</p>
+        <ul class="sources">
+          <li>Inicio — <a href="https://ctctelecom.mx/">https://ctctelecom.mx/</a> — verificado en vivo</li>
+          <li>Datos — <a href="https://ctctelecom.mx/datos/">https://ctctelecom.mx/datos/</a> — verificado en vivo y lectura de texto</li>
+          <li>Telefonía — <a href="https://ctctelecom.mx/telefonia/">https://ctctelecom.mx/telefonia/</a> — verificado en vivo</li>
+          <li>Data Center Connectivity — <a href="https://ctctelecom.mx/data-center/">https://ctctelecom.mx/data-center/</a> — verificado en vivo</li>
+          <li>Soluciones Empresariales — <a href="https://ctctelecom.mx/integracion/">https://ctctelecom.mx/integracion/</a> — verificado en vivo</li>
+          <li>Carrier &amp; Interconnection — <a href="https://ctctelecom.mx/carrier-interconnection/">https://ctctelecom.mx/carrier-interconnection/</a> — verificado en vivo</li>
+          <li>Nosotros — <a href="https://ctctelecom.mx/nosotros/">https://ctctelecom.mx/nosotros/</a> — lectura de texto (índice)</li>
+          <li>Soporte — <a href="https://ctctelecom.mx/soporte/">https://ctctelecom.mx/soporte/</a> — verificado en vivo y lectura de texto</li>
+          <li>Contacto — <a href="https://ctctelecom.mx/contacto/">https://ctctelecom.mx/contacto/</a> — verificado en vivo y lectura de texto</li>
+          <li>Looking Glass — <a href="https://ctctelecom.mx/looking-glass/">https://ctctelecom.mx/looking-glass/</a> — lectura de texto (índice)</li>
+          <li>Aviso de Privacidad — <a href="https://ctctelecom.mx/aviso-de-privacidad/">https://ctctelecom.mx/aviso-de-privacidad/</a> — lectura de texto (índice)</li>
+          <li>Código de Prácticas Comerciales — <a href="https://ctctelecom.mx/codigo-practicas-comerciales/">https://ctctelecom.mx/codigo-practicas-comerciales/</a> — índice</li>
+          <li>Términos y Condiciones — <a href="https://ctctelecom.mx/terminos-y-condiciones/">https://ctctelecom.mx/terminos-y-condiciones/</a> — índice</li>
+          <li>Residencial — <a href="https://ctctelecom.com.mx/">https://ctctelecom.com.mx/</a> — lectura de texto (índice)</li>
+          <li>robots.txt — <a href="https://ctctelecom.mx/robots.txt">https://ctctelecom.mx/robots.txt</a> — 404 verificado el 24-11-2026</li>
+          <li>sitemap.xml — <a href="https://ctctelecom.mx/sitemap.xml">https://ctctelecom.mx/sitemap.xml</a> — 404 verificado el 24-11-2026</li>
+          <li>Perfil tecnológico (indicio histórico, no verificado en el sitio actual) — <a href="https://rocketreach.co/ctc-telecom-technology-stack_b4461895faff6a72">rocketreach.co/ctc-telecom-technology-stack</a></li>
+          <li>AS270165 Servicios Best CTC — <a href="https://ipregistry.co/AS270165">https://ipregistry.co/AS270165</a></li>
+          <li>PeeringDB (destino del enlace del hero, por HTTP) — <a href="http://peeringdb.com/net/41652">http://peeringdb.com/net/41652</a></li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <p>Informe preparado por HMV Soluciones a partir del análisis público de ctctelecom.mx realizado el 24 de noviembre de 2026, como insumo para el arranque del trabajo con CTC Telecom (análisis GAP de su modelo operativo). Todas las afirmaciones provienen de la visita en vivo y del índice web de esa fecha; lo no verificado está señalado como tal.</p>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        var buttons = document.querySelectorAll('.filters button');
+        var rows = document.querySelectorAll('.imp-table tbody tr');
+        buttons.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            buttons.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+            btn.setAttribute('aria-pressed', 'true');
+            var f = btn.getAttribute('data-filter');
+            rows.forEach(function (row) {
+              row.hidden = !(f === 'all' || row.getAttribute('data-prio') === f);
+            });
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
