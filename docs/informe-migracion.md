@@ -153,6 +153,36 @@ deja el paso reproducible.
 > imágenes, porque las rutas son absolutas (`/assets/…`). No es un archivo faltante: es el protocolo
 > `file://`. En el dominio publicado no ocurre.
 
+### 3.12 Mapa de red animado en la portada
+
+La portada conservó el hueco del mapa (`#mapa-red`), que antes era una imagen de fondo estática
+(`map.svg`). Ahora monta el **mapa animado** con canvas: nodos de México, EE. UU. y enlaces
+internacionales, paquetes en tránsito, latencia media y leyenda.
+
+- `layouts/partials/mapa-red.html` — el bloque completo (HTML + estilos acotados en `#rm-root` + JS
+  autocontenido: sin librerías ni peticiones externas).
+- `layouts/shortcodes/mapa-red.html` — permite insertarlo desde el contenido con `{{< mapa-red >}}`.
+- `content/_index.html` — usado dentro de la sección `#mapa-red`.
+
+> Se cambió el archivo heredado `mapa-red.html` (documento completo con `<!DOCTYPE html>`) por la
+> versión *embed* `mapa-red-embed.html`, que sí es un fragmento incrustable. El color de acento quedó
+> en `#FF0060` (el magenta de la marca).
+
+**Responsive.** El encuadre del mapa es siempre el mismo (`-131°` a `-74°` de longitud), así que
+**Asia y Europa no desaparecen** a ningún ancho. Antes el script recortaba la vista a `-119°…-84°`
+por debajo de 700 px y ambos extremos se salían del lienzo.
+
+Para que se vea bien en pantallas chicas:
+
+- la latitud se adapta al alto disponible (si el contenedor es más alto se ve más océano arriba y
+  abajo, sin deformar el mapa ni recortar);
+- el `aspect-ratio` del contenedor pasa de `2.35/1` a `2/1` en móvil (alto mínimo 200 px);
+- las etiquetas tienen **prioridad y anticolisión**: Asia y Europa se dibujan siempre primero y con
+  tipografía mayor; las de POP y red metropolitana se van ocultando solas cuando no caben;
+- se acotan a los bordes del lienzo para que ningún texto quede cortado.
+
+Verificado en anchos de 356, 446, 608, 700, 820, 1024 y 1440 px.
+
 ---
 
 ## 4. Incidencias heredadas que conviene resolver (no se tocaron)

@@ -201,6 +201,42 @@ que aparezca en el menú. La URL `/slug/` queda lista automáticamente.
 > Los acordeones usan `<details>` nativo: funcionan sin JavaScript, su contenido **sí** está en el
 > HTML (Google lo lee) y el primero se abre por defecto, igual que antes.
 
+### 4. Insertar un partial (bloque reutilizable) en una página
+
+**Un partial no se puede llamar desde el contenido.** Dentro de `content/*.html` (o `.md`) Hugo no
+ejecuta `{{ partial "x.html" . }}`: lo imprime como texto. Las plantillas solo se ejecutan en
+`layouts/`, y el contenido únicamente procesa **shortcodes** (`{{< ... >}}`).
+
+La regla es simple:
+
+| Desde dónde | Cómo se llama |
+|---|---|
+| Un layout (`layouts/index.html`, `single.html`, `servicio.html`…) | `{{ partial "mapa-red.html" . }}` |
+| El contenido (`content/_index.html`, `content/<slug>/index.md`…) | crear el shortcode y usar `{{< mapa-red >}}` |
+
+Ejemplo real, el mapa animado de la red:
+
+```
+layouts/partials/mapa-red.html      ← el bloque (HTML + <style> + <script>)
+layouts/shortcodes/mapa-red.html    ← una línea: {{ partial "mapa-red.html" . }}
+content/_index.html                 ← se coloca con:  {{< mapa-red >}}
+```
+
+Dentro de la portada queda así:
+
+```html
+<div class="container mx-auto px-4 mb-16">
+  {{< mapa-red >}}
+</div>
+```
+
+Dos advertencias:
+
+1. Un partial debe ser un **fragmento** (un `<div>`, una sección…), no un documento completo. Si
+   empieza con `<!DOCTYPE html>` / `<html>` / `<body>` no sirve para incrustarse.
+2. El shortcode hereda el contexto de la página, así que dentro del partial puedes usar `.` (la
+   página actual) para leer parámetros o datos.
+
 ---
 
 ## Regenerar el contenido desde el sitio original
