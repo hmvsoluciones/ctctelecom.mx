@@ -13,6 +13,7 @@ details > summary {
 details > summary::-webkit-details-marker { display: none; }
 details > summary::marker { content: ""; }
 details.ctc-acc[open] > summary > svg { transform: rotate(180deg); }
+details.ctc-macc[open] > summary > svg { transform: rotate(180deg); }
 
 /* El header fijo no debe tapar las anclas de sección */
 section[id] { scroll-margin-top: 6rem; }
@@ -45,20 +46,76 @@ summary:focus-visible {
 }
 
 /* --- Utilidades usadas por las plantillas nuevas (no existían en el CSS original) --- */
-.gap-x-8 { column-gap: 2rem; }
 .gap-x-6 { column-gap: 1.5rem; }
-.gap-y-6 { row-gap: 1.5rem; }
 .gap-y-2 { row-gap: .5rem; }
-.w-\[880px\] { width: 880px; }
-.max-w-\[92vw\] { max-width: 92vw; }
-.max-h-\[80vh\] { max-height: 80vh; }
 .mt-0\.5 { margin-top: .125rem; }
 .w-56 { width: 14rem; }
-.pt-36 { padding-top: 9rem; }
 .mt-10 { margin-top: 2.5rem; }
-.space-y-1\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: .375rem; }
 
-/* El panel del menú "Servicios" en <details> debe quedar sobre el contenido */
-details[open] > div {
+/* --- Menú "Servicios" de escritorio: réplica del DropdownMenu de producción --- */
+.ctc-svc-panel {
+  position: absolute;
+  top: calc(100% + .375rem);
+  left: 50%;
+  min-width: 220px;
   z-index: 60;
+  transform: translateX(-50%);
+  animation: ctc-menu-in .12s ease-out;
+}
+@keyframes ctc-menu-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.ctc-svc-row { position: relative; }
+
+/* Submenú lateral: se abre al pasar el mouse o al enfocar con teclado */
+.ctc-svc-sub {
+  position: absolute;
+  top: -.5rem;
+  left: calc(100% - .25rem);
+  width: max-content;
+  max-width: 360px;
+  padding-left: .25rem;
+  z-index: 61;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-2px);
+  transition: opacity .12s ease, transform .12s ease, visibility .12s;
+}
+.ctc-svc-subcard { min-width: 200px; }
+.ctc-svc-row:hover > .ctc-svc-sub,
+.ctc-svc-row:focus-within > .ctc-svc-sub {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+/* --- Menú móvil: drawer derecho (réplica del Sheet de producción) --- */
+/* El header usa backdrop-filter y eso lo convierte en bloque contenedor de los
+   elementos fixed; por eso el drawer se posiciona en absoluto con 100vw/100vh. */
+.ctc-drawer-root {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+}
+.ctc-drawer[open] .ctc-drawer-overlay { animation: ctc-fade-in .2s ease-out; }
+.ctc-drawer[open] .ctc-drawer-panel   { animation: ctc-slide-in .25s ease-out; }
+
+@keyframes ctc-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes ctc-slide-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ctc-svc-panel,
+  .ctc-svc-sub,
+  .ctc-drawer[open] .ctc-drawer-overlay,
+  .ctc-drawer[open] .ctc-drawer-panel { animation: none; transition: none; }
 }

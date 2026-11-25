@@ -1,5 +1,5 @@
 {{- $s := hugo.Data.site -}}
-<header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-sm border-b py-2 shadow-none">
+<header data-ctc-header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-sm border-b py-2 shadow-none">
   <div class="container mx-auto px-4 flex items-center justify-between">
     <a class="flex items-center shrink-0" href="/" aria-label="CTC Telecom, inicio">
       <div class="relative w-48 md:w-64 h-10 md:h-14 transition-all duration-300">
@@ -11,21 +11,26 @@
       <a class="text-xs xl:text-sm font-bold hover:text-brand-magenta transition-colors" href="/">Inicio</a>
       <a class="text-xs xl:text-sm font-bold hover:text-brand-magenta transition-colors" href="/nosotros/">Nosotros</a>
 
-      <details class="relative group">
-        <summary class="flex items-center gap-1 text-xs xl:text-sm font-bold hover:text-brand-magenta transition-colors outline-none cursor-pointer">
+      <details class="ctc-svc relative" data-ctc-svc>
+        <summary class="flex items-center gap-1 text-xs xl:text-sm font-bold hover:text-brand-magenta transition-colors outline-none cursor-pointer" aria-haspopup="menu">
           Servicios
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
         </summary>
-        <div class="absolute left-0 top-full mt-4 w-[880px] max-w-[92vw] bg-white border border-border rounded-2xl shadow-2xl p-8 grid grid-cols-3 gap-x-8 gap-y-6">
+        <div class="ctc-svc-panel bg-white border border-border shadow-soft p-2 rounded-md" role="menu" aria-label="Servicios">
           {{- range hugo.Data.servicios }}
           {{- $cat := . }}
-          <div>
-            <a href="{{ .href }}" class="block text-[11px] font-black uppercase tracking-wider text-brand-purple hover:text-brand-magenta mb-2">{{ .category }}</a>
-            <ul class="space-y-1.5">
-              {{- range .items }}
-              <li><a href="{{ $cat.href }}#{{ .id }}" class="text-xs text-brand-purple/70 hover:text-brand-magenta transition-colors">{{ .label }}</a></li>
-              {{- end }}
-            </ul>
+          <div class="ctc-svc-row">
+            <a href="{{ .href }}" class="flex justify-between items-center py-2 px-3 rounded-md font-bold text-[11px] tracking-wider text-foreground hover:bg-brand-magenta hover:text-white transition-colors" role="menuitem">
+              <span>{{ .category }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-auto opacity-70" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </a>
+            <div class="ctc-svc-sub" role="menu" aria-label="{{ .category }}">
+              <div class="ctc-svc-subcard bg-white border border-border shadow-soft p-2 rounded-md">
+                {{- range .items }}
+                <a href="{{ $cat.href }}#{{ .id }}" class="block py-2 px-3 rounded-md text-xs font-medium text-foreground hover:bg-brand-magenta hover:text-white transition-colors" role="menuitem">{{ .label }}</a>
+                {{- end }}
+              </div>
+            </div>
           </div>
           {{- end }}
         </div>
@@ -52,22 +57,68 @@
         </a>
       </div>
 
-      <details class="lg:hidden">
+      {{/* Menú móvil: réplica del drawer derecho de producción (300/400 px). */}}
+      <details class="lg:hidden ctc-drawer" data-ctc-drawer>
         <summary class="p-2 text-brand-purple cursor-pointer" aria-label="Abrir menú">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
         </summary>
-        <div class="absolute right-4 top-full mt-4 w-72 max-h-[80vh] overflow-y-auto bg-white border border-border rounded-2xl shadow-2xl p-6">
-          <a class="block py-2 font-bold text-sm text-brand-purple" href="/">Inicio</a>
-          <a class="block py-2 font-bold text-sm text-brand-purple" href="/nosotros/">Nosotros</a>
-          <a class="block py-2 font-bold text-sm text-brand-purple" href="/soporte/">Soporte</a>
-          <a class="block py-2 font-bold text-sm text-brand-purple" href="{{ $s.sitios.residencial }}">Residencial</a>
-          <a class="block py-2 font-bold text-sm text-brand-purple" href="/contacto/">Contacto</a>
-          <p class="mt-4 mb-2 text-[11px] font-black uppercase tracking-wider text-brand-purple/50">Servicios</p>
-          <ul class="space-y-2">
-            {{- range hugo.Data.servicios }}
-            <li><a class="block text-sm text-brand-purple/80" href="{{ .href }}">{{ .category }}</a></li>
-            {{- end }}
-          </ul>
+        <div class="ctc-drawer-root z-[100]">
+          <div class="ctc-drawer-overlay absolute inset-0 bg-black/80" data-ctc-close></div>
+          <div class="ctc-drawer-panel absolute inset-y-0 right-0 w-[300px] sm:w-[400px] bg-white overflow-hidden">
+            <div class="relative p-6 border-b text-left">
+              <p class="text-brand-purple font-headline font-bold text-lg">Menú <span class="text-brand-magenta">principal</span></p>
+              <button type="button" data-ctc-close aria-label="Cerrar menú" class="absolute right-4 top-4 opacity-70 hover:opacity-100 transition-opacity">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </button>
+            </div>
+            <div class="flex flex-col h-full overflow-y-auto">
+            <nav class="flex flex-col p-6 gap-1" aria-label="Navegación móvil">
+              <a class="py-3 text-lg font-bold text-brand-purple hover:text-brand-magenta border-b border-gray-50" href="/">Inicio</a>
+              <a class="py-3 text-lg font-bold text-brand-purple hover:text-brand-magenta border-b border-gray-50" href="/nosotros/">Nosotros</a>
+              <details class="ctc-macc">
+                <summary class="py-3 text-lg font-bold text-brand-purple hover:text-brand-magenta flex items-center justify-between cursor-pointer">
+                  Servicios
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 shrink-0 transition-transform duration-200" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </summary>
+                <div class="pb-4">
+                  <div class="flex flex-col gap-4 pl-4 pt-2">
+                    {{- range hugo.Data.servicios }}
+                    {{- $cat := . }}
+                    <div class="space-y-2">
+                      <a href="{{ .href }}" class="text-sm font-black text-brand-magenta tracking-widest block">{{ .category }}</a>
+                      <div class="flex flex-col gap-2 pl-2 border-l-2 border-brand-roseWhite">
+                        {{- range .items }}
+                        <a href="{{ $cat.href }}#{{ .id }}" class="text-sm text-brand-purple/70 hover:text-brand-magenta transition-colors">{{ .label }}</a>
+                        {{- end }}
+                      </div>
+                    </div>
+                    {{- end }}
+                  </div>
+                </div>
+              </details>
+              <a class="py-3 text-lg font-bold text-brand-purple hover:text-brand-magenta border-b border-gray-50" href="/soporte/">Soporte</a>
+              <a class="py-3 text-lg font-bold text-brand-purple hover:text-brand-magenta border-b border-gray-50" href="{{ $s.sitios.residencial }}">Residencial</a>
+              <a class="py-3 text-lg font-bold text-brand-purple hover:text-brand-magenta border-b border-gray-50" href="/contacto/">Contacto</a>
+            </nav>
+            <div class="mt-auto p-8 border-t bg-brand-roseWhite/20">
+              <div class="flex justify-center gap-6 mb-6">
+                <a href="{{ $s.redes.facebook }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook de CTC Telecom" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-brand-purple shadow-sm hover:bg-brand-magenta hover:text-white transition-all">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                </a>
+                <a href="{{ $s.redes.instagram }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram de CTC Telecom" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-brand-purple shadow-sm hover:bg-brand-magenta hover:text-white transition-all">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                </a>
+                <a href="{{ $s.redes.youtube }}" target="_blank" rel="noopener noreferrer" aria-label="YouTube de CTC Telecom" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-brand-purple shadow-sm hover:bg-brand-magenta hover:text-white transition-all">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></svg>
+                </a>
+                <a href="{{ $s.redes.linkedin }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn de CTC Telecom" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-brand-purple shadow-sm hover:bg-brand-magenta hover:text-white transition-all">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+                </a>
+              </div>
+              <p class="text-[10px] text-center text-brand-purple/40 font-bold uppercase tracking-widest leading-relaxed">© {{ now.Year }} CTC Telecom.<br>América Latina.</p>
+            </div>
+            </div>
+          </div>
         </div>
       </details>
     </div>

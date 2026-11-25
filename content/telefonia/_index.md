@@ -2,6 +2,7 @@
 title: "Telefonía IP: PBX Cloud, SIP y UCaaS | CTC Telecom"
 description: "Telefonía en la nube, SIP Trunking internacional, UCaaS, telefonía celular triple carrier y roaming para empresas."
 layout: "servicio"
+accordion_first_open: false
 hero:
   class: "relative pt-40 pb-32 overflow-hidden bg-brand-midnight min-h-[600px] flex items-center"
   video: "/assets/telefonia.mp4"

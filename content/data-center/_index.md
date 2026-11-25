@@ -4,15 +4,19 @@ description: "Conectividad a data centers: Cross Connects, DCI, acceso a ecosist
 layout: "servicio"
 hero:
   class: "relative pt-32 pb-24 overflow-hidden bg-brand-midnight min-h-[600px] flex items-center"
+  layout: "partner"
   video: "/assets/data-center-connectivity.mp4"
-  poster: ""
-  image: "/assets/images (11).png"
-  title: "Connectivity"
-  accent: "Data Center"
+  video_opacity: "40"
+  h1_class: "text-3xl md:text-5xl font-headline font-bold mb-6 leading-tight text-left max-w-2xl"
+  title: "Data Center"
+  accent: "Connectivity"
+  accent_after: true
   leads:
-    - "CTC Telecom conecta a las empresas con los principales ecosistemas de data centers y plataformas digitales, proporcionando interconexión de alta capacidad, baja latencia y acceso eficiente a servicios cloud, operadores y proveedores de contenido."
-    - "Mediante presencia en centros de datos estratégicos e infraestructura de red empresarial, habilitamos interconexión directa permitiendo transportar datos de forma segura y garantizar la continuidad operativa en entornos distribuidos y multicloud."
-    - "Partner Estratégico"
+    - 'CTC Telecom conecta a las empresas con los principales <span class="text-brand-magenta font-semibold">ecosistemas de data centers</span> y plataformas digitales, proporcionando interconexión de alta capacidad, baja latencia y acceso eficiente a servicios cloud, operadores y proveedores de contenido.'
+    - 'Mediante presencia en centros de datos estratégicos e infraestructura de red empresarial, habilitamos interconexión directa permitiendo transportar datos de forma segura y garantizar la <span class="text-brand-magenta font-semibold">continuidad operativa</span> en entornos distribuidos y multicloud.'
+  partner:
+    label: "Partner Estratégico"
+    image: "/assets/images (11).png"
   ctas:
     - label: "REALIZA UNA COTIZACIÓN"
       href: "/contacto/"
