@@ -1,7 +1,7 @@
 <!-- =====INICIO MAPA ===== -->
 <style>
   #rm-root{--rm-acc:#FF0060}
-  #rm-root .rm-wrap{position:relative;width:100%;aspect-ratio:2.35/1;min-height:280px;overflow:hidden;border-radius:1.5rem}
+  #rm-root .rm-wrap{position:relative;width:100%;min-height:0;overflow:hidden;border-radius:1.5rem}
   #rm-root canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
   #rm-root .rm-panel{position:absolute;left:14px;bottom:14px;padding:10px 14px;background:rgba(6,10,18,.7);backdrop-filter:blur(6px);
     border:1px solid rgba(255,255,255,.1);border-radius:12px;display:grid;gap:5px;font-size:12px;color:rgba(255,255,255,.75)}
@@ -11,7 +11,7 @@
   #rm-root .rm-tip{position:absolute;pointer-events:none;padding:5px 9px;background:#0b1224;border:1px solid var(--rm-acc);color:#fff;
     border-radius:8px;font-size:12px;opacity:0;transition:opacity .15s;white-space:nowrap}
   @media(max-width:700px){
-    #rm-root .rm-wrap{aspect-ratio:2/1;min-height:200px;border-radius:1rem}
+    #rm-root .rm-wrap{border-radius:1rem}
     #rm-root .rm-panel{display:none}
     #rm-root .rm-st{font-size:10px;right:10px}
     #rm-root .rm-st b{font-size:15px}
@@ -19,7 +19,7 @@
 </style>
 <div id="rm-root" class="relative w-full">
   <div class="rm-wrap" id="rm-w">
-    <canvas id="rm-c" role="img" aria-label="Mapa animado de la red con paquetes viajando entre nodos"></canvas>
+    <canvas id="rm-c" role="img" aria-label="Mapa animado de la red con paquetes viajando entre nodos de América"></canvas>
 
     <div class="rm-st" style="top:auto;bottom:12px"><b id="rm-n">0</b> paquetes en tránsito<br><span id="rm-ms">—</span></div>
     <div class="rm-panel">
@@ -48,22 +48,33 @@
     ['CDMX','CDMX',-99.1,19.4,'p'],['PUE','Puebla',-98.2,19.0,'m'],['VER','Veracruz',-96.1,19.2,'m'],
     ['MOR','Morelia',-101.2,19.7,'m'],['LC','Lázaro Cárdenas',-102.2,17.9,'m'],['ACA','Acapulco',-99.9,16.9,'m'],
     ['OAX','Oaxaca',-96.7,17.1,'m'],['TUX','Tuxtla',-93.1,16.8,'m'],['VIL','Villahermosa',-92.9,18.0,'m'],
-    ['MER','Mérida',-89.6,21.0,'m'],['CAN','Cancún',-86.8,21.2,'m'],['LPZ','La Paz',-110.3,24.1,'m'],['CAB','Los Cabos',-109.9,22.9,'m']
+    ['MER','Mérida',-89.6,21.0,'m'],['CAN','Cancún',-86.8,21.2,'m'],['LPZ','La Paz',-110.3,24.1,'m'],['CAB','Los Cabos',-109.9,22.9,'m'],
+    // Centroamérica y Sudamérica
+    ['PAN','Panamá',-79.5,9.0,'p'],
+    ['BOG','Bogotá',-74.1,4.7,'p'],['MDE','Medellín',-75.6,6.2,'m'],['CLO','Cali',-76.5,3.4,'m'],['BAQ','Barranquilla',-74.8,11.0,'m'],
+    ['LIM','Lima',-77,-12,'p'],
+    ['SCL','Santiago',-70.7,-33.4,'p'],['VAP','Valparaíso',-71.6,-33.0,'m'],['ANF','Antofagasta',-70.4,-23.6,'m'],['CCP','Concepción',-73,-36.8,'m']
   ];
   const E = `LA-TIJ TIJ-ENS LA-PHX PHX-NOG NOG-HER HER-CUL CUL-MAZ MAZ-TEP TEP-GDL MAZ-LPZ LPZ-CAB LA-ELP PHX-ELP ELP-JUA JUA-CHI
   CHI-TOR TOR-MON MON-MTY MTY-REY REY-MAT MCA-REY ACU-EPS EPS-MON MTY-SLP TOR-ZAC ZAC-SLP SLP-TAM SLP-QRO QRO-CDMX GDL-LEO LEO-QRO
   GDL-MOR MOR-CDMX CDMX-PUE PUE-VER VER-TAM VER-OAX PUE-OAX OAX-TUX TUX-VIL VER-VIL VIL-MER MER-CAN MOR-LC LC-ACA ACA-CDMX ZAC-GDL
-  DAL-ELP DAL-MCA DAL-MIA DAL-LA DAL-EPS MCA-MIA MTY-TAM MTY-MCA AS-LA AS-TIJ EU-MIA EU-DAL`.split(/\s+/).map(s => s.split('-'));
+  DAL-ELP DAL-MCA DAL-MIA DAL-LA DAL-EPS MCA-MIA MTY-TAM MTY-MCA AS-LA AS-TIJ EU-MIA EU-DAL
+  CAN-PAN CDMX-PAN MIA-PAN MIA-BOG PAN-BOG PAN-BAQ BAQ-BOG BAQ-MDE BOG-MDE BOG-CLO PAN-LIM BOG-LIM LIM-SCL LIM-ANF ANF-SCL SCL-VAP SCL-CCP VAP-CCP AS-SCL`.split(/\s+/).map(s => s.split('-'));
 
-  // ---- Contorno aproximado (lon,lat) para generar el mapa de puntos
+  // ---- Contornos aproximados (lon,lat) para generar el mapa de puntos
   const MX = [[-117.1,32.5],[-114.7,32.7],[-111.1,31.3],[-108.2,31.3],[-108.2,31.8],[-106.5,31.8],[-104.9,30.6],[-104.5,29.6],[-103.1,29],[-102.4,29.8],[-101.4,29.8],[-100.7,29.1],[-99.5,27.5],[-99.1,26.4],[-97.4,25.9],[-97.7,24.3],[-97.8,22.5],[-97.2,20.6],[-96.4,19.2],[-95.2,18.7],[-94.4,18.1],[-92.5,18.6],[-91.5,18.5],[-90.5,19.5],[-90.4,21],[-88.2,21.5],[-87,21.5],[-87.5,19.5],[-88.3,18.5],[-88.9,17.9],[-90.4,17.8],[-91.4,17.3],[-92.1,16.2],[-92.2,14.6],[-94,16],[-95.5,15.9],[-97.5,15.9],[-99.5,16.7],[-101.5,17.8],[-103.5,18.3],[-105.2,20.2],[-105.5,21.5],[-106,22.8],[-108,25],[-109.4,26.8],[-111,28],[-112.4,29.7],[-113.1,31.2],[-114.8,31.8]];
   const BAJA = [[-117.1,32.5],[-116,30.8],[-114.7,28],[-114,27],[-112,24.8],[-110.3,23],[-109.5,23.2],[-110,24.2],[-111,25.7],[-112.5,28],[-113.2,29.5],[-114.7,31.2],[-115,32.7]];
   const US = [[-124.5,34.4],[-117.1,32.5],[-114.7,32.7],[-111.1,31.3],[-108.2,31.3],[-108.2,31.8],[-106.5,31.8],[-104.9,30.6],[-104.5,29.6],[-103.1,29],[-102.4,29.8],[-101.4,29.8],[-100.7,29.1],[-99.5,27.5],[-99.1,26.4],[-97.4,25.9],[-97,27.5],[-94,29.5],[-90,29],[-86,30.2],[-84,30],[-82.8,27.8],[-81.2,25.2],[-80.2,25.5],[-80,27],[-80,36],[-124.5,36]];
+  const CA = [[-92.2,14.6],[-91,13.9],[-89,13.3],[-87.7,13],[-86,11.7],[-85.7,10.8],[-84.5,9.9],[-83,8.3],[-81,7.4],[-79.5,8.9],[-78,8.2],[-77.3,8.6],[-77.4,9.2],[-79.5,9.6],[-81.5,8.8],[-82.5,9.6],[-83.5,10.9],[-83.5,12.5],[-83.2,14.5],[-84.5,15.8],[-86.5,15.9],[-88.5,15.8],[-88.9,17.9],[-90.4,17.8],[-91.4,17.3]];
+  const SA = [[-77.3,8.7],[-75.6,10.4],[-74.2,11.3],[-72.2,12.2],[-71.3,12.4],[-70,11.5],[-68,10.6],[-64,10.6],[-62,10.7],[-61,8.6],[-58,6.8],[-55,5.9],[-52,5],[-50,1.8],[-50,0],[-48,-1],[-44.5,-2.5],[-41,-2.9],[-37.5,-4.5],[-35,-5.5],[-34.8,-8],[-36,-10.5],[-38.5,-13],[-39,-17.5],[-40.5,-21],[-42,-23],[-45,-23.8],[-48.5,-26],[-48.8,-28.5],[-50.5,-31],[-53.4,-33.7],[-55,-35],[-57.5,-34.8],[-57,-36.2],[-57.5,-38],[-62,-39],[-62.3,-41],[-65,-41],[-64.2,-43],[-66,-45],[-67.5,-46.5],[-65.8,-48],[-68.5,-50.3],[-69,-52.3],[-68.5,-53],[-71,-54],[-73.5,-52.5],[-75.5,-50],[-75.5,-46],[-74,-43],[-73.8,-40],[-73.5,-37],[-72,-33],[-71.5,-30],[-70.8,-26],[-70.3,-20],[-70.3,-18.4],[-72,-17],[-76,-14],[-77.5,-11],[-79,-8],[-81.2,-6],[-81,-4.5],[-80,-2.5],[-80.5,-0.8],[-80,0.8],[-78.8,1.5],[-77.5,4],[-77.4,6.5]];
+  // Países resaltados (mismo brillo que México)
+  const COL = [[-77.3,8.7],[-75.6,10.4],[-74.2,11.3],[-72.2,12.2],[-71.3,12.4],[-72,11],[-72.5,9.5],[-72.2,7.5],[-70.5,7],[-70.2,6.2],[-67.5,6.2],[-67.8,4],[-67.6,2],[-69.8,1.2],[-70.2,-1.5],[-69.5,-4.2],[-70.5,-3.8],[-72,-2.3],[-74,-1],[-75.3,-0.1],[-77,0.4],[-78.8,1.5],[-77.5,4],[-77.4,6.5]];
+  const CHL = [[-69.5,-18],[-68.5,-21],[-68.2,-23],[-68.5,-25.5],[-69,-28],[-70,-30],[-70.1,-33],[-70.4,-36],[-71.2,-38.5],[-71.8,-41],[-71.8,-44],[-72.3,-47],[-73,-50],[-72,-52],[-68.5,-52.5],[-68.5,-53],[-71,-54],[-73.5,-52.5],[-75.5,-50],[-75.5,-46],[-74,-43],[-73.8,-40],[-73.5,-37],[-72,-33],[-71.5,-30],[-70.8,-26],[-70.3,-20],[-70.3,-18.4]];
 
   const rootEl = document.getElementById('rm-root');
   const css = v => getComputedStyle(rootEl).getPropertyValue(v).trim();
   const ACCENT = css('--color-brand-magenta') || '#e0399b', VIOLET = '#a98bff', AMBER = '#ffb44a';
-  let LON0 = -131, LON1 = -74, LAT0 = 13, LAT1 = 36;
+  let LON0 = -131, LON1 = -34, LAT0 = -57, LAT1 = 35;
   const cv = document.getElementById('rm-c'), cx = cv.getContext('2d');
   const wrap = document.getElementById('rm-w'), tip = document.getElementById('rm-tip');
   const hexA = h => { const c = document.createElement('canvas').getContext('2d'); c.fillStyle = h; const v = c.fillStyle;
@@ -89,26 +100,26 @@
 
   function layout(){
     DPR = Math.min(devicePixelRatio||1, 2);
-    W = Math.max(1, wrap.clientWidth); H = Math.max(1, wrap.clientHeight);
 
-    // Encuadre FIJO y completo: nunca se recorta, así Asia y Europa siempre están.
-    LON0 = -131; LON1 = -74;
-    // El rango de latitud se adapta al alto disponible para no deformar el mapa
-    // (si el contenedor es más alto, se ve más "océano" arriba y abajo).
-    const lonRange = LON1 - LON0, latCentro = 24.5;
-    const latRange = Math.max(23.5, lonRange * H / W);
-    LAT0 = latCentro - latRange/2; LAT1 = latCentro + latRange/2;
+    // Encuadre AUTOMÁTICO: se ajusta a los límites reales de los nodos + un margen,
+    // y el contenedor toma exactamente esa proporción (sin océano de sobra ni deformación).
+    const PAD = 5;
+    const lons = N.map(n => n[2]), lats = N.map(n => n[3]);
+    LON0 = Math.min(...lons) - PAD; LON1 = Math.max(...lons) + PAD;
+    LAT0 = Math.min(...lats) - PAD; LAT1 = Math.max(...lats) + PAD;
+    wrap.style.aspectRatio = (LON1-LON0) + ' / ' + (LAT1-LAT0);
+    W = Math.max(1, wrap.clientWidth); H = Math.max(1, wrap.clientHeight);
 
     cv.width = Math.round(W*DPR); cv.height = Math.round(H*DPR); cx.setTransform(DPR,0,0,DPR,0,0);
     Object.values(byId).forEach(n => n.p = P(n));
     links.forEach(l => l.c = ctrl(l));
-    // Mapa de puntos
-    land = []; const step = Math.max(5, W/190);
+    // Mapa de puntos: [x, y, resaltado]
+    land = []; const step = Math.max(5, W/150);
     for (let y=step/2; y<H; y+=step) for (let x=step/2; x<W; x+=step){
-      const lon = LON0 + x/W*(LON1-LON0), lat = LAT1 - y/H*(LAT1-LAT0);
-      const mx = inside([lon,lat],MX) || inside([lon,lat],BAJA);
-      const us = !mx && inside([lon,lat],US);
-      if (mx || us) land.push([x,y,mx]);
+      const pt = [LON0 + x/W*(LON1-LON0), LAT1 - y/H*(LAT1-LAT0)];
+      const hl = inside(pt,MX) || inside(pt,BAJA) || inside(pt,COL) || inside(pt,CHL);
+      const dim = !hl && (inside(pt,US) || inside(pt,CA) || inside(pt,SA));
+      if (hl || dim) land.push([x,y,hl]);
     }
     land.step = step;
   }
@@ -136,7 +147,7 @@
     cx.clearRect(0,0,W,H);
     // tierra
     const r = land.step*.2;
-    for (const [x,y,mx] of land){ cx.fillStyle = mx ? 'rgba(255,255,255,.28)' : 'rgba(255,255,255,.09)'; cx.fillRect(x-r,y-r,r*2,r*2); }
+    for (const [x,y,hl] of land){ cx.fillStyle = hl ? 'rgba(255,255,255,.28)' : 'rgba(255,255,255,.09)'; cx.fillRect(x-r,y-r,r*2,r*2); }
     // enlaces
     for (const l of links){
       l.heat = Math.max(0, l.heat - dt*0.6);
@@ -147,7 +158,7 @@
     }
     cx.setLineDash([]);
     // paquetes
-    if (!reduce){ acc += dt; while (acc > 0.14){ acc -= 0.14; if (pk.length<70) spawn(); } }
+    if (!reduce){ acc += dt; while (acc > 0.14){ acc -= 0.14; if (pk.length<80) spawn(); } }
     for (let k=pk.length-1;k>=0;k--){
       const p = pk[k], a = p.path[p.i], b = p.path[p.i+1], l = linkOf(a,b), rev = l.a.id!==a;
       const len = Math.hypot(l.b.p.x-l.a.p.x, l.b.p.y-l.a.p.y)+1;
@@ -159,8 +170,7 @@
       cx.globalAlpha = 1; cx.shadowColor = p.color; cx.shadowBlur = 10; cx.fillStyle = '#fff';
       cx.beginPath(); cx.arc(pos.x,pos.y,2.2,0,7); cx.fill(); cx.shadowBlur = 0;
     }
-    // nodos + etiquetas (con prioridad y anticolisión: al reducir el ancho se
-    // ocultan etiquetas secundarias, pero Asia y Europa siempre se dibujan)
+    // nodos + etiquetas (con prioridad y anticolisión)
     cx.textBaseline = 'middle';
     const placed = [];
     const putLabel = (text, x0, y0, size, color, weight, align) => {
@@ -194,7 +204,6 @@
       }
     }
     document.getElementById('rm-n').textContent = pk.length;
-    if (!(now%7<1)) document.getElementById('rm-ms').textContent = 'latencia media ' + (18+((now/900|0)%7)) + ' ms';
     if (!(now%7<1)) document.getElementById('rm-ms').textContent = 'latencia media ' + (18+((now/900|0)%7)) + ' ms';
     requestAnimationFrame(frame);
   }
