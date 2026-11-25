@@ -1,0 +1,38 @@
+# Generado por tools/comprimir_videos.py
+# H.264 CRF 21, preset slow, sin audio, tope 1920px
+videos:
+  "Banner-web-3.mp4":
+    poster: "/assets/Banner-web-3-poster.jpg"
+    width: 1920
+    height: 1089
+    mobile: "/assets/Banner-web-3-720.mp4"
+  "TELECOM-FONDO.mp4":
+    poster: "/assets/TELECOM-FONDO-poster.jpg"
+    width: 1920
+    height: 1089
+    mobile: "/assets/TELECOM-FONDO-720.mp4"
+  "carrier-interconexion.mp4":
+    poster: "/assets/carrier-interconexion-poster.jpg"
+    width: 1280
+    height: 720
+  "data-center-connectivity.mp4":
+    poster: "/assets/data-center-connectivity-poster.jpg"
+    width: 1280
+    height: 720
+    mobile: "/assets/data-center-connectivity-720.mp4"
+  "datos.mp4":
+    poster: "/assets/datos-poster.jpg"
+    width: 1280
+    height: 720
+  "soluciones-empresariales.mp4":
+    poster: "/assets/soluciones-empresariales-poster.jpg"
+    width: 1280
+    height: 720
+  "soporte2.mp4":
+    poster: "/assets/soporte2-poster.jpg"
+    width: 1280
+    height: 720
+  "telefonia.mp4":
+    poster: "/assets/telefonia-poster.jpg"
+    width: 1280
+    height: 720

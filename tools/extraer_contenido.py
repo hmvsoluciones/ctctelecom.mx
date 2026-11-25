@@ -195,12 +195,23 @@ def cls(el):
 
 
 def parse_h2(h2):
-    title = (h2.text or "").strip()
+    """Devuelve (title, accent, accent_first) respetando el orden del HTML.
+
+    Casos que aparecen en el sitio:
+      <h2>Texto <span>acento</span></h2>            -> ("Texto", "acento", False)
+      <h2><span>Texto</span> resto</h2>             -> ("resto", "Texto", True)
+      <h2>Texto</h2>                                -> ("Texto", "", False)
+    """
+    before = (h2.text or "").strip()
     spans = h2.xpath("./span")
-    accent = text(spans[0]) if spans else ""
-    if not title and spans:
-        title, accent = text(spans[0]), ""
-    return title, accent
+    if not spans:
+        return before, "", False
+    sp = spans[0]
+    accent = text(sp)
+    after = (sp.tail or "").strip()
+    if before:
+        return before, (accent + (" " + after if after else "")).strip(), False
+    return after, accent, True
 
 
 def yaml_scalar(v):
@@ -259,7 +270,7 @@ def parse_service(slug):
     elif len(h1_spans) == 1:
         h1_title, h1_accent = "", text(h1_spans[0])
     else:
-        h1_title, h1_accent = parse_h2(h1)
+        h1_title, h1_accent, _ = parse_h2(h1)
     leads = [text(p) for p in hero_el.xpath(".//p") if text(p)]
     vsrc = hero_el.xpath(".//video/source/@src")
     vposter = hero_el.xpath(".//video/@poster")
@@ -271,7 +282,7 @@ def parse_service(slug):
     for sec in doc.xpath("//main/section[position()>1]"):
         badge = text(sec.xpath(".//div[contains(@class,'rounded-full')][1]"))
         h2 = sec.xpath(".//h2")
-        stitle, saccent = parse_h2(h2[0]) if h2 else ("", "")
+        stitle, saccent, sfirst = parse_h2(h2[0]) if h2 else ("", "", False)
         img_el = sec.xpath(".//img[1]")
         img = img_el[0] if img_el else None
         media_inner = img.getparent() if img is not None else None
@@ -295,7 +306,7 @@ def parse_service(slug):
             if a_idx == 0 and html_bullets:
                 items = html_bullets
             panels.append({"title": t, "items": items})
-        sections.append({
+        seccion = {
             "id": sec.get("id") or "",
             "class": cls(sec),
             "row_class": cls(row[0]) if row else "",
@@ -310,7 +321,10 @@ def parse_service(slug):
             "alt": (img.get("alt") or "") if img is not None else "",
             "text_class": cls(text_outer),
             "panels": panels,
-        })
+        }
+        if sfirst:
+            seccion["accent_first"] = True
+        sections.append(seccion)
 
     return {
         "title": SEO[slug][0],

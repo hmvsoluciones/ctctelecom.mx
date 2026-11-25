@@ -10,7 +10,7 @@
         </a>
         <div class="flex flex-col gap-2">
           <h4 class="font-bold text-brand-purple text-xs border-b border-brand-magenta/20 pb-1 inline-block w-fit">Ubicación</h4>
-          <a href="{{ $s.direccion.mapa }}" target="_blank" rel="noopener noreferrer" class="text-xs text-brand-purple/70 leading-relaxed font-medium hover:text-brand-magenta transition-colors">{{ $s.direccion.calle }}, {{ $s.direccion.colonia }}, {{ $s.direccion.cp }}<br>{{ $s.direccion.ciudad }}</a>
+          <a href="{{ $s.direccion.mapa }}" target="_blank" rel="noopener noreferrer" class="text-xs text-brand-purple/70 leading-relaxed font-medium hover:text-brand-magenta transition-colors">{{ $s.direccion.calle }}<br>{{ $s.direccion.colonia }}, {{ $s.direccion.cp }}<br>{{ $s.direccion.ciudad }}</a>
         </div>
       </div>
 
@@ -44,9 +44,7 @@
             <li><a class="hover:text-brand-magenta transition-colors" href="/codigo-practicas-comerciales/">Código de prácticas comerciales</a></li>
             <li><a class="hover:text-brand-magenta transition-colors" href="/manual-de-pagos/">Manual de pagos</a></li>
             <li><a class="hover:text-brand-magenta transition-colors" href="/neutralidad-de-red/">Neutralidad de red</a></li>
-            <li><a class="hover:text-brand-magenta transition-colors" href="/tarifas-ift/">Tarifas IFT</a></li>
             <li><a class="hover:text-brand-magenta transition-colors" href="/looking-glass/">Looking Glass</a></li>
-            <li><a class="hover:text-brand-magenta transition-colors" href="/test-de-velocidad/">Test de velocidad</a></li>
           </ul>
         </div>
       </div>
@@ -58,22 +56,12 @@
           <li><a class="hover:text-brand-magenta transition-colors" href="/politica-de-cookies/">Política de cookies</a></li>
           <li><a class="hover:text-brand-magenta transition-colors" href="/carta-de-derechos-minimos/">Carta de derechos mínimos</a></li>
           <li><a class="hover:text-brand-magenta transition-colors" href="/terminos-y-condiciones/">Términos y condiciones</a></li>
-          <li><a class="hover:text-brand-magenta transition-colors" href="/contrato-de-adhesion/">Contrato de adhesión</a></li>
           <li><a class="hover:text-brand-magenta transition-colors" href="/infografia-derechos-minimos/">Infografía de derechos mínimos</a></li>
         </ul>
       </div>
     </div>
 
-    <div class="mt-16 pt-8 border-t border-border">
-      <h4 class="font-bold text-brand-purple text-sm mb-3">Servicios</h4>
-      <ul class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-brand-purple/70 font-medium">
-        {{- range hugo.Data.servicios }}
-        <li><a class="hover:text-brand-magenta transition-colors" href="{{ .href }}">{{ .category }}</a></li>
-        {{- end }}
-      </ul>
-    </div>
-
-    <div class="mt-10 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
+    <div class="mt-16 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-[10px] text-brand-purple/40 font-bold uppercase tracking-widest">© {{ now.Year }} CTC Telecom. Todos los derechos reservados.</p>
       <div class="flex items-center gap-4">
         <a href="{{ $s.redes.facebook }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook de CTC Telecom" class="text-brand-purple/40 hover:text-brand-magenta transition-colors">

@@ -1,0 +1,65 @@
+<script>
+(function () {
+  "use strict";
+
+  /* Header: se comprime y gana sombra al hacer scroll (igual que producción). */
+  var header = document.querySelector("[data-ctc-header]");
+  if (header) {
+    var onScroll = function () {
+      var scrolled = window.scrollY > 20;
+      header.classList.toggle("py-1", scrolled);
+      header.classList.toggle("shadow-soft", scrolled);
+      header.classList.toggle("py-2", !scrolled);
+      header.classList.toggle("shadow-none", !scrolled);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+  }
+
+  /* Menú Servicios de escritorio: cierra al hacer clic fuera o con Escape. */
+  var svc = document.querySelector("[data-ctc-svc]");
+  if (svc) {
+    document.addEventListener("click", function (event) {
+      if (svc.open && !svc.contains(event.target)) {
+        svc.open = false;
+      }
+    });
+    svc.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        svc.open = false;
+        var summary = svc.querySelector("summary");
+        if (summary) { summary.focus(); }
+      }
+    });
+  }
+
+  /* Drawer móvil: bloquea el scroll, cierra con overlay, botón X o Escape. */
+  var drawer = document.querySelector("[data-ctc-drawer]");
+  if (drawer) {
+    var lockScroll = function () {
+      var value = drawer.open ? "hidden" : "";
+      document.documentElement.style.overflow = value;
+      document.body.style.overflow = value;
+      /* El drawer está dentro del header (z-50); al abrirlo subimos el header
+         para que quede por encima del botón de WhatsApp, como en producción. */
+      if (header) { header.style.zIndex = drawer.open ? "100" : ""; }
+    };
+    drawer.addEventListener("toggle", lockScroll);
+    lockScroll();
+
+    drawer.addEventListener("click", function (event) {
+      if (event.target.closest("[data-ctc-close]")) {
+        drawer.open = false;
+      }
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && drawer.open) {
+        drawer.open = false;
+        var summary = drawer.querySelector("summary");
+        if (summary) { summary.focus(); }
+      }
+    });
+  }
+})();
+</script>
