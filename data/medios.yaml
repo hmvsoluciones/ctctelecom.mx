@@ -1,5 +1,5 @@
 # Generado por tools/optimizar_imagenes.py
-# dimensions + variantes WebP disponibles en /assets/opt/
+# WebP calidad 92; los originales no se modifican.
 medios:
   "00-S-WAN-MPLS.png":
     width: 1022
@@ -7,109 +7,148 @@ medios:
     widths:
       - 480
       - 960
+      - 1022
   "Banner-web-3-poster.jpg":
     width: 1280
     height: 726
     widths:
       - 480
       - 960
+      - 1280
   "Ctc-Logo-2.png":
-    width: 1600
-    height: 589
+    width: 1863
+    height: 686
     widths:
       - 480
       - 960
       - 1600
+      - 1863
   "FONDOCTC.jpg":
-    width: 1600
-    height: 714
+    width: 2048
+    height: 914
     widths:
       - 480
       - 960
       - 1600
+      - 2048
   "Imagen1ctc.png":
     width: 1050
     height: 600
     widths:
       - 480
       - 960
+      - 1050
   "ImagenLIZ2ctc.png":
     width: 1080
     height: 1350
     widths:
       - 480
       - 960
+      - 1080
   "ImagenLIZ3ctc.png":
     width: 1080
     height: 1350
     widths:
       - 480
       - 960
+      - 1080
   "ImagenLIZ4ctc.png":
     width: 1080
     height: 1350
     widths:
       - 480
       - 960
+      - 1080
   "ImagenLIZ5ctc.png":
     width: 1080
     height: 1350
     widths:
       - 480
       - 960
+      - 1080
   "LAN-TO-LAN.png":
     width: 1216
     height: 880
     widths:
       - 480
       - 960
+      - 1216
   "Marcadepago.png":
-    width: 1600
-    height: 2431
+    width: 1664
+    height: 2528
     widths:
       - 480
       - 960
       - 1600
+      - 1664
   "TELECOM-FONDO-poster.jpg":
     width: 1280
     height: 726
     widths:
       - 480
       - 960
+      - 1280
   "TTT.jpg":
     width: 930
     height: 794
     widths:
       - 480
+      - 930
   "acceso-a-ecosistemas-cloud.png":
     width: 1056
     height: 1008
     widths:
       - 480
       - 960
+      - 1056
   "backbone-red-propia.jpg":
     width: 940
     height: 788
     widths:
       - 480
+      - 940
+  "carrier-interconexion-poster.jpg":
+    width: 1280
+    height: 720
+    widths:
+      - 480
+      - 960
+      - 1280
   "celular-telefonia.png":
-    width: 1600
-    height: 1434
+    width: 2048
+    height: 1835
     widths:
       - 480
       - 960
       - 1600
+      - 2048
   "cross-connects.jpg":
     width: 1024
     height: 919
     widths:
       - 480
       - 960
+      - 1024
   "ctc-imagen-24-estados.jpg":
     width: 940
     height: 788
     widths:
       - 480
+      - 940
+  "data-center-connectivity-poster.jpg":
+    width: 1280
+    height: 720
+    widths:
+      - 480
+      - 960
+      - 1280
+  "datos-poster.jpg":
+    width: 1280
+    height: 720
+    widths:
+      - 480
+      - 960
+      - 1280
   "favicon.png":
     width: 272
     height: 228
@@ -121,12 +160,14 @@ medios:
     widths:
       - 480
       - 960
+      - 1040
   "huawei.jpg":
     width: 1024
     height: 1024
     widths:
       - 480
       - 960
+      - 1024
   "images (11).png":
     width: 318
     height: 159
@@ -138,63 +179,95 @@ medios:
     widths:
       - 480
       - 960
+      - 1080
   "internet-redundante.png":
-    width: 1600
-    height: 1600
+    width: 2048
+    height: 2048
     widths:
       - 480
       - 960
       - 1600
+      - 2048
   "mpls-imagen.jpeg":
     width: 1313
     height: 800
     widths:
       - 480
       - 960
+      - 1313
   "presencia-regional-america-latenia.jpg":
     width: 940
     height: 788
     widths:
       - 480
+      - 940
   "roaming-internacional.png":
-    width: 1600
-    height: 1802
+    width: 1952
+    height: 2198
     widths:
       - 480
       - 960
       - 1600
+      - 1952
   "servidoresdell-ibm.jpg":
     width: 1536
     height: 1024
     widths:
       - 480
       - 960
+      - 1536
   "sip-trunking-internacional.jpg":
     width: 1536
     height: 1335
     widths:
       - 480
       - 960
+      - 1536
   "sla-comprometidos.jpg":
     width: 940
     height: 788
     widths:
       - 480
+      - 940
+  "soluciones-empresariales-poster.jpg":
+    width: 1280
+    height: 720
+    widths:
+      - 480
+      - 960
+      - 1280
+  "soporte2-poster.jpg":
+    width: 1280
+    height: 720
+    widths:
+      - 480
+      - 960
+      - 1280
   "telefonia-integrada-con-crm-apis.png":
     width: 1088
     height: 976
     widths:
       - 480
       - 960
+      - 1088
   "telefonia-nube.png":
     width: 1536
     height: 937
     widths:
       - 480
       - 960
+      - 1536
+  "telefonia-poster.jpg":
+    width: 1280
+    height: 720
+    widths:
+      - 480
+      - 960
+      - 1280
   "ucaas-unified-communications.png":
     width: 1080
     height: 1350
     widths:
       - 480
       - 960
+      - 1080

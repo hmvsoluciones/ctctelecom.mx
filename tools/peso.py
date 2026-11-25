@@ -62,7 +62,9 @@ def referencias(html):
         u = m.group(1).split("#")[0].split("?")[0]
         if u.startswith("/") and u.lower().endswith(EXT_ASSET):
             todo.add(u)
-            estimado.add(u)
+            # la variante móvil solo la descargan pantallas pequeñas
+            if not u.endswith("-720.mp4"):
+                estimado.add(u)
     for m in re.finditer(r'url\((["\']?)(/assets/[^)"\']+)\1\)', resto):
         todo.add(m.group(2))
         estimado.add(m.group(2))

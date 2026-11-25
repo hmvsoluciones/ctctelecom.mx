@@ -1,154 +1,127 @@
 # Rendimiento — rama `feature/performance`
 
-Trabajo de performance sobre el sitio Hugo, alineado con la **mejora 8** del análisis de HMV
-Soluciones del 24-11-2026 («Optimizar imágenes y medir rendimiento»).
+Optimización **sin pérdida de calidad visible**, alineada con la mejora 8 del análisis de HMV
+Soluciones («Optimizar imágenes y medir rendimiento»).
 
-Resumen: **`public/` pasó de 103.3 MB a 37.1 MB** y la portada de **43.4 MB a 4.5 MB** de primera
-carga, sin cambios visuales.
+La regla que se aplicó: **los originales no se tocan** (quedan como respaldo `<img>` bit a bit
+idénticos) y lo que se sirve son variantes WebP de alta calidad. Cada cambio está medido con
+**SSIM/PSNR** en [`calidad-medios.md`](calidad-medios.md).
 
 ---
 
-## 1. Punto de partida (rama `main`)
+## 1. Qué cambió
 
-Medido con `python tools/peso.py` sobre el build de `main`:
-
-| Página | HTML | Medios | Total |
+| Métrica | Antes | Ahora | Δ |
 |---|---:|---:|---:|
-| `/` | 73 KB | 43,280 KB | **43.4 MB** |
-| `/telefonia/` | 115 KB | 16,447 KB | 16.6 MB |
-| `/data-center/` | 92 KB | 16,039 KB | 16.1 MB |
-| `/infraestructura/` | 46 KB | 8,366 KB | 8.4 MB |
-| `/nosotros/` | 37 KB | 8,366 KB | 8.4 MB |
-| `/manual-de-pagos/` | 27 KB | 7,147 KB | 7.2 MB |
+| Portada, escritorio | 43.4 MB | **20.9 MB** | −52 % |
+| Portada, móvil (video 720p) | 43.4 MB | **≈ 4.6 MB** | −89 % |
+| `/data-center/` | 16.1 MB | 6.8 MB | −58 % |
+| `/integracion/` | 5.0 MB | 3.1 MB | −39 % |
+| Videos (8) | 65.7 MB | **34.2 MB** | −48 % |
+| Imágenes: WebP servido | — | 11.0 MB en 114 variantes | — |
+| `public/` completo | 103.3 MB | 88.7 MB | −14 % |
 
-Causas:
+El total del despliegue baja poco **a propósito**: los archivos originales se conservan como
+respaldo para navegadores sin WebP. Lo que baja de verdad es lo que se descarga cada visitante.
 
-- **Video**: 8 MP4 sumaban **65.7 MB**, con un solo fondo de portada de **41.2 MB** (2048×1162, 30 s).
-- **Imágenes**: 39 archivos PNG/JPG de **35.1 MB**, varios de 4–7 MB servidos a tamaño completo.
-- Sin `width`/`height` en las imágenes → *layout shift*.
-- Sin variantes responsive ni WebP: el móvil descargaba la imagen de escritorio.
+### Calidad medida
 
----
-
-## 2. Resultado
-
-| Métrica | Antes | Después | Δ |
+| Tipo | SSIM medio | SSIM mínimo | PSNR |
 |---|---:|---:|---:|
-| `public/` completo | 103.3 MB | **37.1 MB** | −64 % |
-| Portada (primera carga) | 43.4 MB | **4.5 MB** | −90 % |
-| `/data-center/` | 16.1 MB | 2.7 MB | −83 % |
-| `/telefonia/` | 16.6 MB | 1.4 MB | −92 % |
-| `/manual-de-pagos/` | 7.2 MB | 0.9 MB | −87 % |
-| Videos (8) | 65.7 MB | **8.2 MB** | −88 % |
-| Imágenes originales (39) | 35.1 MB | **23.6 MB** | −34 % |
-| Variantes WebP nuevas | — | 65 archivos / 2.7 MB | — |
-| Posters de video | — | 8 archivos / 0.6 MB | — |
+| Imágenes (original vs WebP) | **0.9943** | 0.9807 | 44–52 dB |
+| Videos (original vs recomprimido, a 1440 px) | **0.9901** | 0.9828 | 39–48 dB |
+
+Referencia: SSIM 1.0 = idéntico; por encima de 0.98 la diferencia no se aprecia a simple vista y un
+PSNR sobre 40 dB se considera visualmente sin pérdida. Detalle por archivo en
+[`calidad-medios.md`](calidad-medios.md).
 
 ---
 
-## 3. Qué se hizo
+## 2. Decisiones de calidad
 
-### 3.1 Videos (`tools/comprimir_videos.py`)
+### Imágenes
 
-- Se escalan a **1280 px** de ancho máximo (son fondos decorativos detrás de un degradado).
-- **H.264 CRF 30**, sin pista de audio (siempre van `muted`), `+faststart` para arrancar antes.
-- Se genera un **poster JPEG** por video (primer fotograma) para que no haya hueco negro.
-- El manifiesto `data/videos.yaml` guarda poster y dimensiones; lo consume la plantilla.
+- **WebP calidad 92** (95 en PNG, que suelen ser capturas, diagramas o logos con texto).
+- `method=6` (mejor compresión) y **`exact=True`**: conserva el color de los píxeles transparentes,
+  que es lo que degrada los logos con alfa en WebP.
+- **Sin reescalar**: la variante mayor usa el tamaño nativo (tope 2048 px). El `srcset` ofrece
+  480 / 960 / 1600 / nativo, así que el móvil descarga menos sin pérdida en escritorio.
+- El `<img>` de respaldo apunta **al archivo original intacto**: cero pérdida para navegadores sin WebP.
 
-| Archivo | Antes | Después |
-|---|---:|---:|
-| `TELECOM-FONDO.mp4` | 41.2 MB | **3.8 MB** |
-| `Banner-web-3.mp4` | 7.6 MB | 0.7 MB |
-| `data-center-connectivity.mp4` | 7.1 MB | 1.6 MB |
-| `soluciones-empresariales.mp4` | 3.3 MB | 0.7 MB |
-| `soporte2.mp4` | 2.0 MB | 0.5 MB |
-| `datos.mp4` | 1.8 MB | 0.4 MB |
-| `telefonia.mp4` | 1.5 MB | 0.4 MB |
-| `carrier-interconexion.mp4` | 1.2 MB | 0.2 MB |
+### Video
 
-Además todos los `<video>` llevan ya `poster` y `preload="none"`.
-
-### 3.2 Imágenes (`tools/optimizar_imagenes.py`)
-
-- Recompresión de los originales: máximo **1600 px** de ancho (JPEG q82 progresivo / PNG optimizado).
-- **Variantes WebP** de 480 / 960 / 1600 px en `static/assets/opt/` (65 archivos, 2.7 MB).
-- Manifiesto `data/medios.yaml` con dimensiones reales y variantes disponibles.
-
-### 3.3 Markup (`layouts/partials/picture.html` + shortcode)
-
-Cada imagen se emite como:
-
-```html
-<picture>
-  <source type="image/webp" srcset="/assets/opt/foto-480.webp 480w, /assets/opt/foto-960.webp 960w" sizes="…">
-  <img src="/assets/foto.jpg" alt="…" width="1536" height="1024" loading="lazy" decoding="async">
-</picture>
-```
-
-Esto aporta:
-
-- **WebP** para todos los navegadores actuales (≈30–60 % menos peso que JPEG/PNG) y respaldo al original.
-- **`sizes`/`srcset`**: el móvil descarga la variante de 480 px, no la de 1600.
-- **`width`/`height`**: reserva el espacio y elimina el *layout shift* (CLS).
-- **`loading="lazy"`** en todo salvo la imagen principal; las de las secciones de servicio también.
-- En el hero, la imagen (si la hubiera) va con `fetchpriority="high"`.
-
-Desde el contenido se usa el shortcode:
-
-```html
-{{< picture src="/assets/foto.jpg" alt="Descripción" class="..." >}}
-```
-
-### 3.4 Otros ajustes
-
-- **PeeringDB** pasó de `http://` a `https://www.peeringdb.com/net/41652` (mejora 6 del análisis).
-- Las portadas de sección usan poster en vez de video a pantalla completa sin `poster`.
+- **H.264 CRF 21, preset slow**, resolución nativa con tope **1920 px** (más ancho no se muestra en
+  pantalla y solo engorda el archivo).
+- **Sin pista de audio**: siempre se reproducen `muted`; quitarla no cambia nada perceptible y ahorra
+  unos kbps.
+- **`+faststart`** para que empiece antes.
+- **Variante de 720 px** para pantallas ≤ 700 px, servida con `<source media="(max-width: 700px)">`.
+  En móvil el video del hero pasa de 19.8 MB a **2.9 MB**.
+- **Poster JPEG** en todos: evita el hueco negro mientras carga.
 
 ---
 
-## 4. Cómo medir
+## 3. Cómo se genera
 
 ```powershell
+# 1) imágenes: WebP de alta calidad (no toca los originales)
+python tools\optimizar_imagenes.py
+
+# 2) videos: CRF 21 a 1920 px + variante 720p + poster
+python tools\comprimir_videos.py
+
+# 3) variante móvil en el contenido ya existente
+python tools\insertar_video_movil.py
+
+# 4) compilar y medir
 hugo --cleanDestinationDir
-python tools\peso.py --top 12
+python tools\peso.py
+python tools\verificar_calidad.py --md docs\calidad-medios.md
 ```
 
-```bash
-hugo --cleanDestinationDir
-python3 tools/peso.py --top 12
+Ambas herramientas son idempotentes: si el manifiesto ya tiene el archivo y las variantes existen,
+lo saltan. Los originales de imagen y video se respaldan en `../_medios_originales` (fuera del repo)
+para poder comparar calidad.
+
+### Si algún día se prioriza el peso sobre la calidad
+
+Existe un perfil agresivo, que es el que se usó en la primera pasada de esta rama:
+
+```powershell
+python tools/optimizar_imagenes.py --calidad 82 --recomprimir
+python tools/comprimir_videos.py --crf 28 --max-ancho 1280
 ```
 
-El script usa, para cada `<picture>`, la variante WebP más grande en lugar del original de respaldo,
-así que el número se parece a lo que descarga un navegador moderno (no suma las dos).
-
-Para Core Web Vitals reales hace falta el sitio desplegado: PageSpeed Insights o Lighthouse sobre
-la URL publicada.
+Resultado de ese perfil: `public/` 37 MB, portada 4.5 MB, con SSIM ≈ 0.95–0.97 (se nota en
+degradados y texto pequeño). **No es el que queda activo.**
 
 ---
 
-## 5. Pendiente en esta rama (siguiente iteración)
+## 4. Pendiente (siguiente iteración)
 
-| Tema | Por qué |
+| Tema | Detalle |
 |---|---|
-| **Carga diferida del video del hero** | es el 80 % del peso de la portada; conviene cargarlo tras el primer render (IntersectionObserver) o servir un *still* en móvil con `prefers-reduced-data` |
-| **Montserrat self-hosted + subset** | hoy son 2 conexiones a `fonts.googleapis.com` / `fonts.gstatic.com` que bloquean el render |
-| **Cabeceras de caché y compresión** | depende del hosting; hay ejemplos en `docs/servidor/cache-y-compresion.md` |
-| **Medición de campo** | GA4 + Search Console (mejora 15 del análisis) para saber si el cambio mueve algo |
-| **AVIF** | se puede añadir como `<source>` extra; WebP ya cubre el 97 % de los navegadores |
+| **Video del hero con carga diferida** | es el 95 % del peso de escritorio; cargarlo tras el primer render (IntersectionObserver) o solo si `navigator.connection` no es `saveData` reduce el impacto sin tocar la calidad |
+| **AV1 o HEVC como `<source>` extra** | con el mismo SSIM bajaría a ~8 MB; requiere probar compatibilidad (Safari/HEVC, Chrome+Firefox/AV1) |
+| **Montserrat self-hosted + subset** | hoy son 2 conexiones a Google Fonts que bloquean el render |
+| **Cabeceras de caché** | sin `Cache-Control` se vuelve a descargar todo en cada visita: ver [`servidor/cache-y-compresion.md`](servidor/cache-y-compresion.md) |
+| **Medición de campo** | GA4 + Search Console para comprobar el efecto real |
 
 ---
 
-## 6. Archivos que toca esta rama
+## 5. Archivos de esta rama
 
 ```
-tools/peso.py                     mide el peso por página
-tools/optimizar_imagenes.py       recompresión + WebP + data/medios.yaml
-tools/comprimir_videos.py         recompresión + posters + data/videos.yaml
-tools/pasar_a_picture.py          pasa <img> del contenido a shortcode
-layouts/partials/picture.html     <picture> responsive
+tools/peso.py                     mide el peso real por página
+tools/optimizar_imagenes.py       WebP de alta calidad + data/medios.yaml
+tools/comprimir_videos.py         H.264 CRF 21 + 720p + posters + data/videos.yaml
+tools/insertar_video_movil.py     <source media> en los <video> del contenido
+tools/pasar_a_picture.py          migra <img> del contenido al shortcode
+tools/verificar_calidad.py        SSIM/PSNR por archivo → docs/calidad-medios.md
+layouts/partials/picture.html     <picture> con srcset, dimensiones y lazy
 layouts/shortcodes/picture.html   {{< picture … >}}
-layouts/_default/servicio.html    usa el partial en las secciones
+layouts/_default/servicio.html    picture + poster + video móvil
 data/medios.yaml                  dimensiones y variantes (generado)
-data/videos.yaml                  posters y dimensiones (generado)
-static/assets/opt/*.webp          65 variantes (generado)
+data/videos.yaml                  posters, dimensiones y variante móvil (generado)
+static/assets/opt/*.webp          114 variantes (generado)
 ```

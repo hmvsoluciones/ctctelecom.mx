@@ -8,6 +8,9 @@
       {{- with $h.video }}
       {{- $v := index hugo.Data.videos.videos (path.Base .) }}
       <video autoplay loop muted playsinline preload="none"{{ with $v }} poster="{{ .poster }}"{{ end }} class="absolute inset-0 w-full h-full object-cover opacity-50">
+        {{- with $v }}{{ with .mobile }}
+        <source src="{{ . }}" type="video/mp4" media="(max-width: 700px)">
+        {{- end }}{{ end }}
         <source src="{{ . }}" type="video/mp4">
       </video>
       {{- end }}
@@ -57,7 +60,7 @@
             {{- if $sec.badge }}
             <div class="inline-flex items-center border border-transparent bg-brand-magenta text-white text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider mb-4">{{ $sec.badge }}</div>
             {{- end }}
-            <h2 class="text-4xl md:text-5xl font-headline font-bold text-brand-purple mb-6 text-left">{{ $sec.title }}{{ with $sec.accent }} <span class="text-brand-magenta">{{ . }}</span>{{ end }}</h2>
+            <h2 class="text-4xl md:text-5xl font-headline font-bold text-brand-purple mb-6 text-left">{{ if $sec.accent_first }}<span class="text-brand-magenta">{{ $sec.accent }}</span>{{ with $sec.title }} {{ . }}{{ end }}{{ else }}{{ $sec.title }}{{ with $sec.accent }} <span class="text-brand-magenta">{{ . }}</span>{{ end }}{{ end }}</h2>
             {{- if $sec.lead }}
             <p class="{{ $sec.lead_class }}">{{ $sec.lead }}</p>
             {{- end }}

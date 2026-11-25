@@ -43,7 +43,12 @@
 {{- if eq .Layout "servicio" }}
 {{- $catalog := slice -}}
 {{- range .Params.sections -}}
-  {{- $name := printf "%s %s" (string .title) (string .accent) | strings.TrimSpace }}
+  {{- $name := "" -}}
+  {{- if .accent_first -}}
+    {{- $name = printf "%s %s" (string .accent) (string .title) | strings.TrimSpace -}}
+  {{- else -}}
+    {{- $name = printf "%s %s" (string .title) (string .accent) | strings.TrimSpace -}}
+  {{- end -}}
   {{- $catalog = $catalog | append (dict "@type" "Offer" "itemOffered" (dict "@type" "Service" "name" $name "description" (string .lead) "url" (printf "%s#%s" $.Permalink .id))) -}}
 {{- end -}}
 {{- $svc := dict
