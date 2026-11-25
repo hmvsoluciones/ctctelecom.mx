@@ -5,6 +5,7 @@ layout: "servicio"
 hero:
   class: "relative pt-40 pb-32 overflow-hidden bg-brand-midnight min-h-[600px] flex items-center"
   video: "/assets/soluciones-empresariales.mp4"
+  video_opacity: "50"
   poster: ""
   image: ""
   title: "Empresariales"

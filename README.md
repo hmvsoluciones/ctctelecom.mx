@@ -130,6 +130,8 @@ ver-sitio.sh              lanzador local para macOS / Linux
 data/
   site.yaml               teléfonos, correo, dirección, redes sociales  ← editar aquí
   servicios.yaml          catálogo del menú de Servicios                ← editar aquí
+  medios.yaml             dimensiones y variantes WebP (generado)
+  videos.yaml             posters y dimensiones de video (generado)
 layouts/
   _default/baseof.html    esqueleto HTML (head + header + footer + WhatsApp)
   _default/single.html    páginas normales
@@ -137,18 +139,56 @@ layouts/
   index.html              portada
   404.html                página de error
   sitemap.xml             sitemap filtrado (excluye noindex)
-  partials/               head (SEO), header, footer, whatsapp, jsonld
+  partials/               head (SEO), header, footer, whatsapp, jsonld, picture
+  shortcodes/             mapa-red, picture
 content/
   _index.html             portada
   <slug>/index.html       páginas heredadas (18)
   <slug>/_index.md        servicios con datos estructurados (6)
 static/
   assets/                 imágenes, video, CSS compilado + ctc.css
+  assets/opt/             variantes WebP 480/960/1600 (generado)
   robots.txt
 tools/
   copiar_assets.py        copia desde ../ctctelecom.mx todo medio referenciado
   extraer_contenido.py    vuelve a extraer el contenido desde ../ctctelecom.mx
+  optimizar_imagenes.py   recomprime imágenes y genera WebP + data/medios.yaml
+  comprimir_videos.py     recomprime videos, genera posters + data/videos.yaml
+  pasar_a_picture.py      pasa los <img> del contenido al shortcode picture
+  peso.py                 mide el peso real de cada página
+docs/
+  informe-migracion.md    qué cambió respecto al sitio Next.js
+  performance.md          resultados de la rama feature/performance
+  analisis-hmv-*.md       análisis externo y estado de sus 16 mejoras
+  servidor/               caché y compresión para el hosting
+  referencia/             análisis original (HTML)
 ```
+
+---
+
+## Imágenes y video
+
+Las imágenes se emiten con `<picture>` (WebP + respaldo, `srcset`, `width`/`height` y `loading="lazy"`)
+desde [`layouts/partials/picture.html`](layouts/partials/picture.html). En el contenido se usa el
+shortcode:
+
+```html
+{{< picture src="/assets/foto.jpg" alt="Descripción" class="object-cover" >}}
+```
+
+Para que una imagen nueva entre al sistema responsive, déjala en `static/assets/` y corre:
+
+```powershell
+python tools\optimizar_imagenes.py      # macOS/Linux: python3 tools/optimizar_imagenes.py
+```
+
+Eso genera las variantes WebP y actualiza `data/medios.yaml`. Con video pasa lo mismo:
+
+```powershell
+python tools\comprimir_videos.py        # requiere ffmpeg en el PATH
+```
+
+Si una imagen no está en el manifiesto, el partial emite un `<img>` normal (nunca rompe la página).
 
 ---
 
@@ -249,6 +289,8 @@ Solo si se actualiza el export de Next.js en `../ctctelecom.mx`. Requiere Python
 ```powershell
 python tools\copiar_assets.py
 python tools\extraer_contenido.py
+python tools\optimizar_imagenes.py
+python tools\comprimir_videos.py
 hugo --cleanDestinationDir
 ```
 
@@ -257,6 +299,8 @@ hugo --cleanDestinationDir
 ```bash
 python3 tools/copiar_assets.py
 python3 tools/extraer_contenido.py
+python3 tools/optimizar_imagenes.py
+python3 tools/comprimir_videos.py
 hugo --cleanDestinationDir
 ```
 
@@ -267,6 +311,10 @@ Hoy reporta **39 archivos, 101.9 MB, 0 faltantes**.
 
 `extraer_contenido.py` vuelve a leer cada `index.html` y `index.txt` (payload de React), extrae
 textos y acordeones, y reescribe `content/`. Luego revisa el `git diff` antes de publicar.
+
+`optimizar_imagenes.py` y `comprimir_videos.py` dejan los medios listos para producción (ver
+[`docs/performance.md`](docs/performance.md)). Después de correrlos, el contenido sigue igual:
+los manifiestos `data/medios.yaml` y `data/videos.yaml` se actualizan solos.
 
 ---
 

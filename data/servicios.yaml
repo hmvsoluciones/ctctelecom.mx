@@ -1,4 +1,7 @@
-# Catálogo de servicios: alimenta el menú (ahora rastreable) del header.
+# Catálogo de servicios: alimenta el menú del header.
+# Réplica exacta del menú de producción (ctctelecom.mx): 5 categorías, mismo
+# orden, mismas etiquetas y mismos anclas. "Infraestructura" no aparece en el
+# menú de producción, por eso no se incluye aquí.
 - category: "Datos"
   href: "/datos/"
   items:
@@ -13,8 +16,8 @@
     - { label: "Telefonía en la Nube", id: "telefonia-nube" }
     - { label: "SIP Trunking Internacional", id: "sip-trunking" }
     - { label: "UCaaS", id: "ucaas" }
-    - { label: "Telefonía Integrada con CRM/APIs", id: "crm-apis" }
     - { label: "Telefonía Celular", id: "telefonia-celular" }
+    - { label: "Telefonía Integrada con CRM/APIs", id: "crm-apis" }
     - { label: "Roaming Internacional", id: "roaming-internacional" }
 - category: "Data Center Connectivity"
   href: "/data-center/"
@@ -23,19 +26,12 @@
     - { label: "Data Center Interconnect (DCI)", id: "dci" }
     - { label: "Acceso a Ecosistemas Cloud", id: "acceso-cloud" }
     - { label: "Arquitectura Redundante", id: "arquitectura-redundante" }
-- category: "Infraestructura"
-  href: "/infraestructura/"
-  items:
-    - { label: "Construcción de Fibra", id: "construccion-fibra" }
-    - { label: "Cableado Estructurado", id: "cableado-estructurado" }
-    - { label: "CCTV", id: "cctv" }
-    - { label: "Torres Autosoportadas", id: "torres-autosoportadas" }
 - category: "Soluciones Empresariales"
   href: "/integracion/"
   items:
     - { label: "Infraestructura de Servidores", id: "servidores" }
-    - { label: "Seguridad de Red", id: "seguridad" }
-    - { label: "Infraestructura de Red", id: "red" }
+    - { label: "Seguridad de Red (Fortinet)", id: "seguridad" }
+    - { label: "Infraestructura de Red (Huawei)", id: "red" }
 - category: "Carrier & Interconnection"
   href: "/carrier-interconnection/"
   items:

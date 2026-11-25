@@ -46,8 +46,10 @@ jobs:
             --baseURL "${{ steps.pages.outputs.base_url }}/"
       - name: Rewrite root-relative URLs for the /ctctelecom.mx subpath
         run: |
-          find public -name '*.html' -exec perl -pi -e 's#((?:src|href|poster|action)="/)(?!ctctelecom\.mx/)#${1}ctctelecom.mx/#g; s#(url\([\x27"]?/)(?!ctctelecom\.mx/)#${1}ctctelecom.mx/#g' {} +
+          find public -name '*.html' -exec perl -pi -e 's#((?:src|href|poster|action)="/)(?!ctctelecom\.mx/)#${1}ctctelecom.mx/#g; s#(url\([\x27"]?/)(?!ctctelecom\.mx/)#${1}ctctelecom.mx/#g; s#(srcset="/)(?!ctctelecom\.mx/)#${1}ctctelecom.mx/#g; s#(,\s*/)(?!ctctelecom\.mx/)#${1}ctctelecom.mx/#g' {} +
           test -z "$(grep -rP '(src|href|poster|action)="/(?!ctctelecom\.mx/)' public --include='*.html' || true)"
+                    test -z "$(grep -rP 'srcset="/(?!ctctelecom\.mx/)' public --include='*.html' || true)"
+                              test -z "$(grep -rP ',\s*/(?!ctctelecom\.mx/)assets/' public --include='*.html' || true)"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

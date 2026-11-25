@@ -1,0 +1,10 @@
+{{- /*  Uso:  {{< picture src="/assets/foto.jpg" alt="Texto" class="..." sizes="..." >}} */ -}}
+{{- $args := dict
+    "src" (.Get "src")
+    "alt" (.Get "alt" | default "")
+    "class" (.Get "class" | default "")
+    "style" (.Get "style" | default "")
+    "loading" (.Get "loading" | default "lazy")
+    "sizes" (.Get "sizes" | default "")
+    "fetchpriority" (.Get "fetchpriority" | default "") -}}
+{{- partial "picture.html" $args -}}

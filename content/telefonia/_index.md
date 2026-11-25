@@ -2,6 +2,7 @@
 title: "Telefonía IP: PBX Cloud, SIP y UCaaS | CTC Telecom"
 description: "Telefonía en la nube, SIP Trunking internacional, UCaaS, telefonía celular triple carrier y roaming para empresas."
 layout: "servicio"
+accordion_first_open: false
 hero:
   class: "relative pt-40 pb-32 overflow-hidden bg-brand-midnight min-h-[600px] flex items-center"
   video: "/assets/telefonia.mp4"
@@ -21,8 +22,9 @@ sections:
     class: "py-24 bg-white overflow-hidden border-b border-brand-roseWhite scroll-mt-24"
     row_class: "flex flex-col lg:flex-row items-center gap-16"
     badge: "Voz IP Empresarial"
-    title: "Telefonía en"
-    accent: ""
+    accent_first: true
+    title: "la Nube"
+    accent: "Telefonía en"
     lead: "Plataforma de telefonía empresarial alojada en la nube, que elimina la necesidad de conmutadores físicos y permite operar, escalar y administrar llamadas desde cualquier lugar."
     lead_class: "text-brand-purple/70 text-lg leading-relaxed max-w-xl text-justify"
     media_class: "relative w-full aspect-square max-w-[650px] mx-auto overflow-hidden"
@@ -105,8 +107,9 @@ sections:
     class: "py-24 bg-white overflow-hidden border-b border-brand-roseWhite scroll-mt-24"
     row_class: "flex flex-col lg:flex-row items-center gap-16"
     badge: ""
-    title: "UCaaS"
-    accent: ""
+    accent_first: true
+    title: "(Unified Communications)"
+    accent: "UCaaS"
     lead: "Plataforma de comunicaciones unificadas en la nube que integra voz, video, mensajería, colaboración y presencia en un solo entorno, accesible desde cualquier dispositivo."
     lead_class: "text-brand-purple/70 text-lg leading-relaxed max-w-xl text-justify"
     media_class: "relative w-full aspect-square max-w-[650px] mx-auto overflow-hidden"
