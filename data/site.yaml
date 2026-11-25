@@ -1,0 +1,31 @@
+# Datos globales del sitio (una sola fuente de verdad)
+nombre: "CTC Telecom"
+razon_social: "Servicios Giga Best, S.A.P.I. de C.V."
+dominio: "ctctelecom.mx"
+
+direccion:
+  calle: "Montecito 38, Piso 27, Oficina 23"
+  colonia: "Nápoles, Benito Juárez"
+  cp: "03810"
+  ciudad: "Ciudad de México, CDMX"
+  mapa: "https://maps.app.goo.gl/kSVBWQunnEqCMyYP6"
+
+telefonos:
+  whatsapp:
+    - "55 1033 2515"
+    - "55 1033 2514"
+  conmutador:
+    - "55 8880 8200"
+    - "55 8880 8282"
+
+email: "ventas@ctctelecom.mx"
+
+redes:
+  facebook: "https://www.facebook.com/CTCTelecomCorporativo"
+  instagram: "https://www.instagram.com/ctctelecomcorporativo/"
+  youtube: "https://www.youtube.com/@ctctelecomcorporativo6919"
+  linkedin: "https://www.linkedin.com/company/ctctelecom/?originalSubdomain=mx"
+
+sitios:
+  residencial: "https://ctctelecom.com.mx/"
+  peeringdb: "http://peeringdb.com/net/41652"

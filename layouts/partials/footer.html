@@ -1,0 +1,94 @@
+{{- $s := hugo.Data.site -}}
+<footer class="bg-white py-16 border-t border-border font-body">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div class="flex flex-col items-start lg:col-span-1">
+        <a class="flex flex-col items-start mb-8 w-full" href="/" aria-label="CTC Telecom, inicio">
+          <div class="relative w-full max-w-[300px] h-24 md:h-32">
+            <img src="/assets/Ctc-Logo-2.png" alt="CTC Telecom" width="300" height="128" loading="lazy" decoding="async" class="object-contain object-left w-full h-full">
+          </div>
+        </a>
+        <div class="flex flex-col gap-2">
+          <h4 class="font-bold text-brand-purple text-xs border-b border-brand-magenta/20 pb-1 inline-block w-fit">Ubicación</h4>
+          <a href="{{ $s.direccion.mapa }}" target="_blank" rel="noopener noreferrer" class="text-xs text-brand-purple/70 leading-relaxed font-medium hover:text-brand-magenta transition-colors">{{ $s.direccion.calle }}, {{ $s.direccion.colonia }}, {{ $s.direccion.cp }}<br>{{ $s.direccion.ciudad }}</a>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-6">
+        <h4 class="font-bold text-brand-purple text-lg">Teléfonos</h4>
+        <ul class="flex flex-col gap-5 text-xs text-brand-purple/70">
+          <li>
+            <span class="font-bold text-brand-magenta text-sm tracking-[0.2em] block mb-1">WhatsApp</span>
+            {{- range $s.telefonos.whatsapp }}
+            <a href="https://wa.me/52{{ replace . " " "" }}" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-brand-purple hover:text-brand-magenta transition-colors block">{{ . }}</a>
+            {{- end }}
+          </li>
+          <li>
+            <span class="font-bold text-brand-magenta text-sm tracking-[0.2em] block mb-1">Conmutador</span>
+            {{- range $s.telefonos.conmutador }}
+            <a href="tel:+52{{ replace . " " "" }}" class="text-xs font-semibold text-brand-purple hover:text-brand-magenta transition-colors block">{{ . }}</a>
+            {{- end }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="flex flex-col gap-8">
+        <div class="flex flex-col gap-4">
+          <h4 class="font-bold text-brand-purple text-sm">Email</h4>
+          <p class="text-xs text-brand-purple/70 font-semibold"><a href="mailto:{{ $s.email }}" class="hover:text-brand-magenta transition-colors">{{ $s.email }}</a></p>
+        </div>
+        <div class="flex flex-col gap-4">
+          <h4 class="font-bold text-brand-purple text-sm">Enlaces</h4>
+          <ul class="flex flex-col gap-2 text-xs text-brand-purple/70 font-medium">
+            <li><a class="hover:text-brand-magenta transition-colors" href="/recomendaciones-de-seguridad/">Recomendaciones de seguridad</a></li>
+            <li><a class="hover:text-brand-magenta transition-colors" href="/codigo-practicas-comerciales/">Código de prácticas comerciales</a></li>
+            <li><a class="hover:text-brand-magenta transition-colors" href="/manual-de-pagos/">Manual de pagos</a></li>
+            <li><a class="hover:text-brand-magenta transition-colors" href="/neutralidad-de-red/">Neutralidad de red</a></li>
+            <li><a class="hover:text-brand-magenta transition-colors" href="/tarifas-ift/">Tarifas IFT</a></li>
+            <li><a class="hover:text-brand-magenta transition-colors" href="/looking-glass/">Looking Glass</a></li>
+            <li><a class="hover:text-brand-magenta transition-colors" href="/test-de-velocidad/">Test de velocidad</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <h4 class="font-bold text-brand-purple text-sm">Políticas</h4>
+        <ul class="flex flex-col gap-2 text-xs text-brand-purple/70 font-medium">
+          <li><a class="hover:text-brand-magenta transition-colors" href="/aviso-de-privacidad/">Aviso de privacidad</a></li>
+          <li><a class="hover:text-brand-magenta transition-colors" href="/politica-de-cookies/">Política de cookies</a></li>
+          <li><a class="hover:text-brand-magenta transition-colors" href="/carta-de-derechos-minimos/">Carta de derechos mínimos</a></li>
+          <li><a class="hover:text-brand-magenta transition-colors" href="/terminos-y-condiciones/">Términos y condiciones</a></li>
+          <li><a class="hover:text-brand-magenta transition-colors" href="/contrato-de-adhesion/">Contrato de adhesión</a></li>
+          <li><a class="hover:text-brand-magenta transition-colors" href="/infografia-derechos-minimos/">Infografía de derechos mínimos</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-16 pt-8 border-t border-border">
+      <h4 class="font-bold text-brand-purple text-sm mb-3">Servicios</h4>
+      <ul class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-brand-purple/70 font-medium">
+        {{- range hugo.Data.servicios }}
+        <li><a class="hover:text-brand-magenta transition-colors" href="{{ .href }}">{{ .category }}</a></li>
+        {{- end }}
+      </ul>
+    </div>
+
+    <div class="mt-10 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-[10px] text-brand-purple/40 font-bold uppercase tracking-widest">© {{ now.Year }} CTC Telecom. Todos los derechos reservados.</p>
+      <div class="flex items-center gap-4">
+        <a href="{{ $s.redes.facebook }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook de CTC Telecom" class="text-brand-purple/40 hover:text-brand-magenta transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="{{ $s.redes.instagram }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram de CTC Telecom" class="text-brand-purple/40 hover:text-brand-magenta transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+        </a>
+        <a href="{{ $s.redes.youtube }}" target="_blank" rel="noopener noreferrer" aria-label="YouTube de CTC Telecom" class="text-brand-purple/40 hover:text-brand-magenta transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></svg>
+        </a>
+        <a href="{{ $s.redes.linkedin }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn de CTC Telecom" class="text-brand-purple/40 hover:text-brand-magenta transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

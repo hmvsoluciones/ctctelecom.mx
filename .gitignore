@@ -1,0 +1,12 @@
+# salida de compilación
+public/
+resources/_gen/
+.hugo_build.lock
+
+# sistema
+.DS_Store
+Thumbs.db
+
+# temporales del editor
+.vscode/
+.idea/

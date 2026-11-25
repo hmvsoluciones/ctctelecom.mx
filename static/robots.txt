@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# (Sin rutas bloqueadas: el sitio es 100% público y las imágenes sociales
+#  deben poder rastrearse para las vistas previas en redes y en Google.)

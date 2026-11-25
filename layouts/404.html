@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+{{ partial "head.html" . }}
+</head>
+<body class="font-body antialiased selection:bg-brand-magenta selection:text-white">
+  {{ partial "header.html" . }}
+  <main id="main" class="min-h-screen bg-white text-foreground">
+    <section class="relative pt-40 pb-24 bg-brand-midnight">
+      <div class="container mx-auto px-4">
+        <p class="text-brand-magenta font-black text-xs tracking-[0.35em] uppercase mb-3">Error 404</p>
+        <h1 class="text-4xl md:text-5xl font-headline font-bold text-white mb-4 uppercase tracking-tight">Página no encontrada</h1>
+        <div class="h-1.5 w-24 bg-brand-magenta rounded-full"></div>
+      </div>
+    </section>
+    <section class="py-20">
+      <div class="container mx-auto px-4 max-w-4xl">
+        <p class="text-brand-purple/80 text-base leading-relaxed mb-8">La página que buscas cambió de dirección o ya no existe. Puedes volver al inicio o ir directamente a la sección que necesitas.</p>
+        <div class="flex flex-wrap gap-4 mb-12">
+          <a href="/" class="inline-flex items-center justify-center w-56 h-12 rounded-md bg-brand-magenta text-white font-bold text-sm uppercase tracking-wider hover:bg-brand-magenta/90 transition-all">Volver al inicio</a>
+          <a href="/contacto/" class="inline-flex items-center justify-center w-56 h-12 rounded-md bg-brand-purple text-white font-bold text-sm uppercase tracking-wider hover:bg-brand-purple/90 transition-all">Contactar a ventas</a>
+        </div>
+        <h2 class="text-2xl font-headline font-bold text-brand-purple mb-4">Servicios</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-10">
+          {{- range hugo.Data.servicios }}
+          <li><a href="{{ .href }}" class="text-brand-purple/80 hover:text-brand-magenta transition-colors">→ {{ .category }}</a></li>
+          {{- end }}
+        </ul>
+        <h2 class="text-2xl font-headline font-bold text-brand-purple mb-4">Enlaces útiles</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <li><a href="/soporte/" class="text-brand-purple/80 hover:text-brand-magenta transition-colors">→ Soporte técnico</a></li>
+          <li><a href="/looking-glass/" class="text-brand-purple/80 hover:text-brand-magenta transition-colors">→ Looking Glass</a></li>
+          <li><a href="/test-de-velocidad/" class="text-brand-purple/80 hover:text-brand-magenta transition-colors">→ Test de velocidad</a></li>
+          <li><a href="/aviso-de-privacidad/" class="text-brand-purple/80 hover:text-brand-magenta transition-colors">→ Aviso de privacidad</a></li>
+        </ul>
+        <p class="mt-10 text-sm text-brand-purple/60">¿Necesitas ayuda? <a href="https://wa.me/{{ site.Params.whatsapp }}" class="font-bold text-brand-magenta">Escríbenos por WhatsApp</a>.</p>
+      </div>
+    </section>
+  </main>
+  {{ partial "footer.html" . }}
+  {{ partial "whatsapp.html" . }}
+</body>
+</html>

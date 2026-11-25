@@ -1,0 +1,14 @@
+{{- $site := hugo.Data.site -}}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+{{ partial "head.html" . }}
+</head>
+<body class="font-body antialiased selection:bg-brand-magenta selection:text-white">
+  <a href="#main" class="sr-only focus:not-sr-only">Saltar al contenido</a>
+  {{ partial "header.html" . }}
+  {{ block "main" . }}{{ end }}
+  {{ partial "footer.html" . }}
+  {{ partial "whatsapp.html" . }}
+</body>
+</html>

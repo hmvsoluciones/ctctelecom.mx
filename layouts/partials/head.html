@@ -1,0 +1,47 @@
+{{- $title := .Title -}}
+{{- $desc := .Description | default site.Params.description -}}
+{{- $canonical := .Permalink -}}
+{{- $og := site.Params.og_image | absURL -}}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ $title }}</title>
+<meta name="description" content="{{ $desc }}">
+<link rel="canonical" href="{{ $canonical }}">
+<meta name="robots" content="{{ if .Params.noindex }}noindex, follow{{ else }}index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1{{ end }}">
+<meta name="theme-color" content="#041E4A">
+<meta name="author" content="CTC Telecom">
+<meta name="geo.region" content="MX-CMX">
+<meta name="geo.placename" content="Ciudad de México">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CTC Telecom">
+<meta property="og:locale" content="es_MX">
+<meta property="og:title" content="{{ $title }}">
+<meta property="og:description" content="{{ $desc }}">
+<meta property="og:url" content="{{ $canonical }}">
+<meta property="og:image" content="{{ $og }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="CTC Telecom — red de fibra óptica propia en México">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ $title }}">
+<meta name="twitter:description" content="{{ $desc }}">
+<meta name="twitter:image" content="{{ $og }}">
+
+<link rel="alternate" hreflang="es-MX" href="{{ $canonical }}">
+<link rel="alternate" hreflang="x-default" href="{{ $canonical }}">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+
+<link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="16x16">
+<link rel="icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/favicon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="stylesheet" href="/assets/css/ctc.css">
+{{ partial "jsonld.html" . }}

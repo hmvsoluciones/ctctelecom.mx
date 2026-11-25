@@ -1,0 +1,46 @@
+# Catálogo de servicios: alimenta el menú (ahora rastreable) del header.
+- category: "Datos"
+  href: "/datos/"
+  items:
+    - { label: "Internet Dedicado", id: "internet-dedicado" }
+    - { label: "SDN", id: "sdn" }
+    - { label: "MPLS", id: "mpls" }
+    - { label: "SD-WAN + MPLS", id: "sd-wan-mpls" }
+    - { label: "Lan To Lan", id: "lan-to-lan" }
+- category: "Telefonía"
+  href: "/telefonia/"
+  items:
+    - { label: "Telefonía en la Nube", id: "telefonia-nube" }
+    - { label: "SIP Trunking Internacional", id: "sip-trunking" }
+    - { label: "UCaaS", id: "ucaas" }
+    - { label: "Telefonía Integrada con CRM/APIs", id: "crm-apis" }
+    - { label: "Telefonía Celular", id: "telefonia-celular" }
+    - { label: "Roaming Internacional", id: "roaming-internacional" }
+- category: "Data Center Connectivity"
+  href: "/data-center/"
+  items:
+    - { label: "Cross Connects", id: "cross-connects" }
+    - { label: "Data Center Interconnect (DCI)", id: "dci" }
+    - { label: "Acceso a Ecosistemas Cloud", id: "acceso-cloud" }
+    - { label: "Arquitectura Redundante", id: "arquitectura-redundante" }
+- category: "Infraestructura"
+  href: "/infraestructura/"
+  items:
+    - { label: "Construcción de Fibra", id: "construccion-fibra" }
+    - { label: "Cableado Estructurado", id: "cableado-estructurado" }
+    - { label: "CCTV", id: "cctv" }
+    - { label: "Torres Autosoportadas", id: "torres-autosoportadas" }
+- category: "Soluciones Empresariales"
+  href: "/integracion/"
+  items:
+    - { label: "Infraestructura de Servidores", id: "servidores" }
+    - { label: "Seguridad de Red", id: "seguridad" }
+    - { label: "Infraestructura de Red", id: "red" }
+- category: "Carrier & Interconnection"
+  href: "/carrier-interconnection/"
+  items:
+    - { label: "Carrier Interconnection", id: "carrier-interconnection" }
+    - { label: "Data Center Interconnect (DCI)", id: "dci" }
+    - { label: "Cloud Connect", id: "cloud-connect" }
+    - { label: "Peering & Internet Exchange", id: "peering-ix" }
+    - { label: "CDN & Content Delivery", id: "cdn" }

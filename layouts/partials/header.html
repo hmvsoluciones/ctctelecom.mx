@@ -1,0 +1,75 @@
+{{- $s := hugo.Data.site -}}
+<header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-sm border-b py-2 shadow-none">
+  <div class="container mx-auto px-4 flex items-center justify-between">
+    <a class="flex items-center shrink-0" href="/" aria-label="CTC Telecom, inicio">
+      <div class="relative w-48 md:w-64 h-10 md:h-14 transition-all duration-300">
+        <img src="/assets/Ctc-Logo-2.png" alt="CTC Telecom" width="256" height="56" fetchpriority="high" class="object-contain object-left w-full h-full">
+      </div>
+    </a>
+
+    <nav class="hidden lg:flex items-center gap-4 xl:gap-6" aria-label="Navegación principal">
+      <a class="text-xs xl:text-sm font-bold hover:text-brand-magenta transition-colors" href="/">Inicio</a>
+      <a class="text-xs xl:text-sm font-bold hover:text-brand-magenta transition-colors" href="/nosotros/">Nosotros</a>
+
+      <details class="relative group">
+        <summary class="flex items-center gap-1 text-xs xl:text-sm font-bold hover:text-brand-magenta transition-colors outline-none cursor-pointer">
+          Servicios
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="absolute left-0 top-full mt-4 w-[880px] max-w-[92vw] bg-white border border-border rounded-2xl shadow-2xl p-8 grid grid-cols-3 gap-x-8 gap-y-6">
+          {{- range hugo.Data.servicios }}
+          {{- $cat := . }}
+          <div>
+            <a href="{{ .href }}" class="block text-[11px] font-black uppercase tracking-wider text-brand-purple hover:text-brand-magenta mb-2">{{ .category }}</a>
+            <ul class="space-y-1.5">
+              {{- range .items }}
+              <li><a href="{{ $cat.href }}#{{ .id }}" class="text-xs text-brand-purple/70 hover:text-brand-magenta transition-colors">{{ .label }}</a></li>
+              {{- end }}
+            </ul>
+          </div>
+          {{- end }}
+        </div>
+      </details>
+
+      <a class="text-xs xl:text-sm font-bold hover:text-brand-magenta transition-colors" href="/soporte/">Soporte</a>
+      <a class="text-xs xl:text-sm font-bold hover:text-brand-magenta transition-colors" href="{{ $s.sitios.residencial }}">Residencial</a>
+      <a class="text-xs xl:text-sm font-bold hover:text-brand-magenta transition-colors" href="/contacto/">Contacto</a>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <div class="hidden xl:flex items-center gap-2">
+        <a href="{{ $s.redes.facebook }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook de CTC Telecom" class="w-7 h-7 rounded-full bg-brand-roseWhite flex items-center justify-center text-brand-purple hover:bg-brand-magenta hover:text-white transition-all duration-300">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="{{ $s.redes.instagram }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram de CTC Telecom" class="w-7 h-7 rounded-full bg-brand-roseWhite flex items-center justify-center text-brand-purple hover:bg-brand-magenta hover:text-white transition-all duration-300">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+        </a>
+        <a href="{{ $s.redes.youtube }}" target="_blank" rel="noopener noreferrer" aria-label="YouTube de CTC Telecom" class="w-7 h-7 rounded-full bg-brand-roseWhite flex items-center justify-center text-brand-purple hover:bg-brand-magenta hover:text-white transition-all duration-300">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></svg>
+        </a>
+        <a href="{{ $s.redes.linkedin }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn de CTC Telecom" class="w-7 h-7 rounded-full bg-brand-roseWhite flex items-center justify-center text-brand-purple hover:bg-brand-magenta hover:text-white transition-all duration-300">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+      </div>
+
+      <details class="lg:hidden">
+        <summary class="p-2 text-brand-purple cursor-pointer" aria-label="Abrir menú">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        </summary>
+        <div class="absolute right-4 top-full mt-4 w-72 max-h-[80vh] overflow-y-auto bg-white border border-border rounded-2xl shadow-2xl p-6">
+          <a class="block py-2 font-bold text-sm text-brand-purple" href="/">Inicio</a>
+          <a class="block py-2 font-bold text-sm text-brand-purple" href="/nosotros/">Nosotros</a>
+          <a class="block py-2 font-bold text-sm text-brand-purple" href="/soporte/">Soporte</a>
+          <a class="block py-2 font-bold text-sm text-brand-purple" href="{{ $s.sitios.residencial }}">Residencial</a>
+          <a class="block py-2 font-bold text-sm text-brand-purple" href="/contacto/">Contacto</a>
+          <p class="mt-4 mb-2 text-[11px] font-black uppercase tracking-wider text-brand-purple/50">Servicios</p>
+          <ul class="space-y-2">
+            {{- range hugo.Data.servicios }}
+            <li><a class="block text-sm text-brand-purple/80" href="{{ .href }}">{{ .category }}</a></li>
+            {{- end }}
+          </ul>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>

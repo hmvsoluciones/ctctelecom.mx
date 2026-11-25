@@ -1,0 +1,89 @@
+{{ define "main" }}
+{{- $h := .Params.hero -}}
+{{- $btnPrimary := "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 w-64 bg-brand-magenta hover:bg-brand-magenta/90 text-white font-bold h-12 px-8 rounded-md transition-all border-none" -}}
+{{- $btnSecondary := "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 w-64 bg-brand-purple hover:bg-brand-purple/90 text-white font-bold h-12 px-8 rounded-md transition-all border-none" -}}
+<main id="main" class="min-h-screen bg-white text-foreground">
+  <section class="{{ $h.class }}">
+    <div class="absolute inset-0 z-0">
+      {{- with $h.video }}
+      <video autoplay loop muted playsinline preload="metadata" class="absolute inset-0 w-full h-full object-cover opacity-50">
+        <source src="{{ . }}" type="video/mp4">
+      </video>
+      {{- end }}
+      {{- if and (not $h.video) $h.image }}
+      <img src="{{ $h.image }}" alt="" class="absolute inset-0 w-full h-full object-cover opacity-50" loading="eager" decoding="async">
+      {{- end }}
+      <div class="absolute inset-0 bg-gradient-to-r from-brand-midnight via-brand-midnight/80 to-transparent"></div>
+    </div>
+    <div class="container mx-auto px-4 relative z-10 text-left">
+      <div class="max-w-4xl">
+        <h1 class="text-4xl md:text-6xl font-headline font-bold mb-6 leading-tight text-left">{{ with $h.accent }}<span class="text-brand-magenta">{{ . }}</span>{{ end }}{{ if and $h.accent $h.title }} {{ end }}{{ with $h.title }}<span class="text-white">{{ . }}</span>{{ end }}</h1>
+        <div class="space-y-6 max-w-2xl mb-10">
+          {{- range $h.leads }}
+          <p class="text-lg md:text-xl text-white/90 font-light leading-relaxed text-justify">{{ . }}</p>
+          {{- end }}
+        </div>
+        {{- with $h.ctas }}
+        <div class="flex flex-wrap gap-4 justify-start">
+          {{- range $i, $c := . }}
+          <a href="{{ $c.href }}" class="{{ if eq $i 0 }}{{ $btnPrimary }}{{ else }}{{ $btnSecondary }}{{ end }}">{{ $c.label }}</a>
+          {{- end }}
+        </div>
+        {{- end }}
+      </div>
+    </div>
+  </section>
+
+  {{- range .Params.sections }}
+  {{- $sec := . }}
+  <section id="{{ $sec.id }}" class="{{ $sec.class }}">
+    <div class="container mx-auto px-4">
+      <div class="{{ $sec.row_class }}">
+        <div class="lg:w-1/2 relative">
+          {{- if $sec.img }}
+          <div class="{{ $sec.media_class }}">
+            <img src="{{ $sec.img }}" alt="{{ $sec.alt }}" loading="lazy" decoding="async" class="{{ $sec.img_class }}" style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent">
+          </div>
+          {{- end }}
+        </div>
+        <div class="{{ $sec.text_class }}">
+          <div class="text-left">
+            {{- if $sec.badge }}
+            <div class="inline-flex items-center border border-transparent bg-brand-magenta text-white text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider mb-4">{{ $sec.badge }}</div>
+            {{- end }}
+            <h2 class="text-4xl md:text-5xl font-headline font-bold text-brand-purple mb-6 text-left">{{ $sec.title }}{{ with $sec.accent }} <span class="text-brand-magenta">{{ . }}</span>{{ end }}</h2>
+            {{- if $sec.lead }}
+            <p class="{{ $sec.lead_class }}">{{ $sec.lead }}</p>
+            {{- end }}
+          </div>
+          {{- if $sec.panels }}
+          <div class="w-full max-w-xl space-y-4">
+            {{- range $i, $p := $sec.panels }}
+            <div class="bg-brand-roseWhite/40 rounded-2xl px-6">
+              <details class="ctc-acc"{{ if eq $i 0 }} open{{ end }}>
+                <summary class="flex cursor-pointer items-center justify-between font-bold text-brand-purple py-4 text-left">
+                  {{ $p.title }}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 shrink-0 transition-transform duration-200" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </summary>
+                <div class="pt-0 text-brand-purple/70 pb-6 text-justify">
+                  <ul class="space-y-2">
+                    {{- range $p.items }}
+                    <li class="flex items-start gap-2 text-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check text-brand-magenta mt-0.5 shrink-0" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                      <span>{{ . }}</span>
+                    </li>
+                    {{- end }}
+                  </ul>
+                </div>
+              </details>
+            </div>
+            {{- end }}
+          </div>
+          {{- end }}
+        </div>
+      </div>
+    </div>
+  </section>
+  {{- end }}
+</main>
+{{ end }}

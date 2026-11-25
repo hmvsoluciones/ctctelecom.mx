@@ -1,0 +1,24 @@
+baseURL = "https://ctctelecom.mx/"
+title = "CTC Telecom"
+locale = "es-MX"
+defaultContentLanguage = "es"
+enableRobotsTXT = false
+disableKinds = ["taxonomy", "term", "rss"]
+
+# Contenido HTML heredado (build de Next.js) habilitado de forma controlada
+[security]
+  allowContent = ['^text/(html|markdown|plain)$']
+
+[markup]
+  [markup.goldmark.renderer]
+    unsafe = true
+
+[params]
+  description = "Operador de telecomunicaciones con red de fibra óptica propia en México y presencia en América Latina. Soluciones críticas para empresas."
+  og_image = "/assets/og/ctc-telecom-1200x630.png"
+  whatsapp = "525510332515"
+  email = "ventas@ctctelecom.mx"
+
+[sitemap]
+  changefreq = "weekly"
+  priority = 0.6

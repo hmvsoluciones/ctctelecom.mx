@@ -1,0 +1,64 @@
+/* Correcciones y utilidades mínimas sobre el CSS compilado original (Tailwind) */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+}
+
+/* Acordeones nativos (<details>) con el mismo aspecto que los de Radix */
+details > summary {
+  list-style: none;
+  cursor: pointer;
+}
+details > summary::-webkit-details-marker { display: none; }
+details > summary::marker { content: ""; }
+details.ctc-acc[open] > summary > svg { transform: rotate(180deg); }
+
+/* El header fijo no debe tapar las anclas de sección */
+section[id] { scroll-margin-top: 6rem; }
+
+/* Accesibilidad: foco visible consistente */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 2px solid #FF0060;
+  outline-offset: 2px;
+}
+
+/* Enlace "saltar al contenido" */
+.sr-only:focus {
+  position: fixed;
+  top: .5rem;
+  left: .5rem;
+  z-index: 100;
+  width: auto;
+  height: auto;
+  padding: .75rem 1.25rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  background: #FF0060;
+  color: #fff;
+  font-weight: 700;
+  border-radius: .5rem;
+}
+
+/* --- Utilidades usadas por las plantillas nuevas (no existían en el CSS original) --- */
+.gap-x-8 { column-gap: 2rem; }
+.gap-x-6 { column-gap: 1.5rem; }
+.gap-y-6 { row-gap: 1.5rem; }
+.gap-y-2 { row-gap: .5rem; }
+.w-\[880px\] { width: 880px; }
+.max-w-\[92vw\] { max-width: 92vw; }
+.max-h-\[80vh\] { max-height: 80vh; }
+.mt-0\.5 { margin-top: .125rem; }
+.w-56 { width: 14rem; }
+.pt-36 { padding-top: 9rem; }
+.mt-10 { margin-top: 2.5rem; }
+.space-y-1\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: .375rem; }
+
+/* El panel del menú "Servicios" en <details> debe quedar sobre el contenido */
+details[open] > div {
+  z-index: 60;
+}
