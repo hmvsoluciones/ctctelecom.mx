@@ -1,4 +1,4 @@
-<!-- =====INICIO MAPA · VARIANTE CON CONTORNO ===== -->
+<!-- =====INICIO MAPA · VARIANTE CON CONTORNO + RESPONSIVE ===== -->
 <style>
   #rm-root{--rm-acc:#FF0060}
   #rm-root .rm-wrap{position:relative;width:100%;min-height:0;overflow:hidden;border-radius:1.5rem}
@@ -105,7 +105,7 @@
   const EQ = new Set(['QRO','MTY','SAO','RIO','SCL','BOG','LIM']);
   // México: líneas internas más delgadas (0.6) sin perder las conexiones
   const MX_IDS = new Set(['TIJ','ENS','NOG','HER','JUA','CHI','ACU','MON','TOR','MTY','REY','MAT','TAM','SLP','ZAC','CUL','MAZ','TEP','GDL','LEO','QRO','CDMX','PUE','VER','MOR','LC','ACA','OAX','TUX','VIL','MER','CAN','LPZ','CAB']);
-  let W, H, DPR, land = [];
+  let W, H, DPR, S = 1, land = []; // S: factor de adelgazamiento en pantallas pequeñas
   const P = n => ({ x:(n.lon-LON0)/(LON1-LON0)*W, y:(LAT1-n.lat)/(LAT1-LAT0)*H });
   const inside = (pt, poly) => { let c = false;
     for (let i=0,j=poly.length-1;i<poly.length;j=i++){
@@ -134,6 +134,7 @@
     LAT0 = Math.min(...lats) - PAD_BOTTOM; LAT1 = Math.max(...lats) + PAD_TOP;
     wrap.style.aspectRatio = (LON1-LON0) + ' / ' + (LAT1-LAT0);
     W = Math.max(1, wrap.clientWidth); H = Math.max(1, wrap.clientHeight);
+    S = W < 520 ? 0.6 : W < 900 ? 0.8 : 1; // pantallas pequeñas: líneas y puntos más delgados
 
     cv.width = Math.round(W*DPR); cv.height = Math.round(H*DPR); cx.setTransform(DPR,0,0,DPR,0,0);
     Object.values(byId).forEach(n => n.p = P(n));
@@ -168,15 +169,15 @@
       poly.forEach(([lo, la], k) => { const q = P({lon:lo, lat:la}); k ? cx.lineTo(q.x, q.y) : cx.moveTo(q.x, q.y); });
       cx.closePath(); cx.strokeStyle = style; cx.lineWidth = width; cx.stroke();
     };
-    for (const poly of OTHER) strokePoly(poly, 'rgba(255,255,255,.22)', 1);
-    for (const poly of [MX, BAJA, COL, CHL]) strokePoly(poly, 'rgba(255,255,255,.45)', 1.2);
+    for (const poly of OTHER) strokePoly(poly, 'rgba(255,255,255,.22)', 1*S);
+    for (const poly of [MX, BAJA, COL, CHL]) strokePoly(poly, 'rgba(255,255,255,.45)', 1.2*S);
     // enlaces
     for (const l of links){
       l.heat = Math.max(0, l.heat - dt*0.6);
       cx.beginPath(); cx.moveTo(l.a.p.x,l.a.p.y); cx.quadraticCurveTo(l.c.x,l.c.y,l.b.p.x,l.b.p.y);
-      cx.setLineDash(l.intl?[5,6]:[]); cx.lineWidth = l.mx ? 0.6 : 1;
+      cx.setLineDash(l.intl?[5,6]:[]); cx.lineWidth = (l.mx ? 0.6 : 1)*S;
       cx.strokeStyle = l.intl ? 'rgba(255,180,74,.35)' : 'rgba(255,255,255,.14)'; cx.stroke();
-      if (l.heat>0.02){ cx.lineWidth = 1.5+l.heat*2; cx.strokeStyle = (l.intl?'rgba(255,180,74,':hexA(ACCENT))+l.heat*.9+')'; cx.stroke(); }
+      if (l.heat>0.02){ cx.lineWidth = (1.5+l.heat*2)*S; cx.strokeStyle = (l.intl?'rgba(255,180,74,':hexA(ACCENT))+l.heat*.9+')'; cx.stroke(); }
     }
     cx.setLineDash([]);
     // paquetes
@@ -188,9 +189,9 @@
       if (p.t>=1){ p.t = 0; p.i++; if (p.i>=p.path.length-1){ byId[p.path[p.i]].pulse = 0; pk.splice(k,1); continue; } }
       const pos = bez(l,p.t,rev); p.trail.push(pos); if (p.trail.length>16) p.trail.shift();
       for (let j=0;j<p.trail.length;j++){ const q=p.trail[j], f=j/p.trail.length;
-        cx.globalAlpha = f*.7; cx.fillStyle = p.color; cx.beginPath(); cx.arc(q.x,q.y,.6+f*1.8,0,7); cx.fill(); }
+        cx.globalAlpha = f*.7; cx.fillStyle = p.color; cx.beginPath(); cx.arc(q.x,q.y,(.6+f*1.8)*S,0,7); cx.fill(); }
       cx.globalAlpha = 1; cx.shadowColor = p.color; cx.shadowBlur = 10; cx.fillStyle = '#fff';
-      cx.beginPath(); cx.arc(pos.x,pos.y,2.2,0,7); cx.fill(); cx.shadowBlur = 0;
+      cx.beginPath(); cx.arc(pos.x,pos.y,2.2*S,0,7); cx.fill(); cx.shadowBlur = 0;
     }
     // nodos + etiquetas (con prioridad y anticolisión)
     cx.textBaseline = 'middle';
@@ -211,13 +212,13 @@
     for (const n of Object.values(byId).sort((a,b) => prio(b) - prio(a))){
       n.pulse += dt; const {x,y} = n.p, col = n.t==='x'?AMBER:(n.t==='p'?AMBER:ACCENT);
       const ring = (n.pulse%3)/3;
-      if (n.t!=='m'){ cx.strokeStyle = col; cx.globalAlpha = (1-ring)*.5; cx.beginPath(); cx.arc(x,y,4+ring*14,0,7); cx.stroke(); cx.globalAlpha = 1; }
+      if (n.t!=='m'){ cx.strokeStyle = col; cx.globalAlpha = (1-ring)*.5; cx.lineWidth = S; cx.beginPath(); cx.arc(x,y,(4+ring*14)*S,0,7); cx.stroke(); cx.globalAlpha = 1; }
       cx.fillStyle = col; cx.shadowColor = col; cx.shadowBlur = 8;
       cx.beginPath();
-      if (n.t==='m'){ cx.arc(x,y,3,0,7); }
-      else { cx.moveTo(x,y-6); cx.lineTo(x+6,y+4); cx.lineTo(x-6,y+4); cx.closePath(); }
+      if (n.t==='m'){ cx.arc(x,y,3*S,0,7); }
+      else { cx.moveTo(x,y-6*S); cx.lineTo(x+6*S,y+4*S); cx.lineTo(x-6*S,y+4*S); cx.closePath(); }
       cx.fill(); cx.shadowBlur = 0;
-      if (EQ.has(n.id)){ cx.strokeStyle = AMBER; cx.lineWidth = 1.5; cx.strokeRect(x-7, y-7, 14, 14); }
+      if (EQ.has(n.id)){ cx.strokeStyle = AMBER; cx.lineWidth = 1.5*S; cx.strokeRect(x-7*S, y-7*S, 14*S, 14*S); }
       if (n.t==='p' || hover===n){
         putLabel(n.name, x + 9, y, W<520 ? 8 : W<900 ? 9 : 11,
                  hover===n ? '#fff' : '#9db0da', '', 'left');
