@@ -27,6 +27,7 @@
       <span><i style="height:0;border-top:2px dashed #ffb44a"></i>Enlace internacional</span>
       <span><svg width="18" height="12" style="margin-right:8px;vertical-align:middle"><path d="M9 1l7 10H2z" fill="#ffb44a"/></svg>POP</span>
       <span><i style="height:9px;width:9px;border-radius:50%;background:var(--rm-acc)"></i>Red metropolitana</span>
+      <span><svg width="18" height="12" style="margin-right:8px;vertical-align:middle"><rect x="4" y="1" width="10" height="10" fill="none" stroke="#ffb44a" stroke-width="1.5"/></svg>Data Center Equinix</span>
     </div>
     <div class="rm-tip" id="rm-tip"></div>
   </div>
@@ -54,6 +55,8 @@
     ['BOG','Bogotá',-74.1,4.7,'p'],['MDE','Medellín',-75.6,6.2,'m'],['CLO','Cali',-76.5,3.4,'m'],['BAQ','Barranquilla',-74.8,11.0,'m'],
     ['LIM','Lima',-77,-12,'p'],
     ['SCL','Santiago',-70.7,-33.4,'p'],['VAP','Valparaíso',-71.6,-33.0,'m'],['ANF','Antofagasta',-70.4,-23.6,'m'],['CCP','Concepción',-73,-36.8,'m'],
+    ['UIO','Quito',-78.5,-0.2,'m'],['LPB','La Paz',-68.2,-16.5,'m'],['BSB','Brasilia',-47.9,-15.8,'m'],['FOR','Fortaleza',-38.5,-3.7,'m'],
+    ['RIO','Río de Janeiro',-43.2,-22.9,'p'],['CWB','Curitiba',-49.3,-25.4,'m'],['POA','Porto Alegre',-51.2,-30.0,'m'],['EZE','Buenos Aires',-58.4,-34.6,'p'],
     // Hubs mundiales
     ['NYC','Nueva York',-74,40.7,'p'],['ASH','Ashburn',-77.5,39,'p'],['CHI2','Chicago',-87.6,41.9,'p'],['SJC','San José',-121.9,37.3,'p'],
     ['SAO','São Paulo',-46.6,-23.5,'p'],
@@ -69,7 +72,8 @@
   CAN-PAN CDMX-PAN MIA-PAN MIA-BOG PAN-BOG PAN-BAQ BAQ-BOG BAQ-MDE BOG-MDE BOG-CLO PAN-LIM BOG-LIM LIM-SCL LIM-ANF ANF-SCL SCL-VAP SCL-CCP VAP-CCP
   LA-SJC SJC-CHI2 CHI2-DAL CHI2-NYC NYC-ASH ASH-DAL ASH-MIA NYC-LON ASH-MAD MIA-SAO SAO-LAG SAO-JNB SAO-SCL
   LON-FRA LON-MAD FRA-MAD FRA-DXB LON-DXB FRA-CAI CAI-DXB DXB-AUH DXB-MUM DXB-SIN MUM-SIN SIN-HKG HKG-TYO HKG-SEL SEL-TYO SIN-SYD
-  CAI-NBO NBO-JNB DXB-NBO MAD-LAG LA-TYO SJC-TYO LA-SYD SCL-SYD`.split(/\s+/).map(s => s.split('-'));
+  CAI-NBO NBO-JNB DXB-NBO MAD-LAG LA-TYO SJC-TYO LA-SYD SCL-SYD
+  BOG-UIO UIO-LIM LIM-LPB LPB-SCL SCL-EZE EZE-POA POA-CWB CWB-SAO SAO-RIO RIO-FOR FOR-BSB BSB-SAO MIA-BAQ`.split(/\s+/).map(s => s.split('-'));
 
   // ---- Contornos aproximados (lon,lat) para generar el mapa de puntos
   const MX = [[-117.1,32.5],[-114.7,32.7],[-111.1,31.3],[-108.2,31.3],[-108.2,31.8],[-106.5,31.8],[-104.9,30.6],[-104.5,29.6],[-103.1,29],[-102.4,29.8],[-101.4,29.8],[-100.7,29.1],[-99.5,27.5],[-99.1,26.4],[-97.4,25.9],[-97.7,24.3],[-97.8,22.5],[-97.2,20.6],[-96.4,19.2],[-95.2,18.7],[-94.4,18.1],[-92.5,18.6],[-91.5,18.5],[-90.5,19.5],[-90.4,21],[-88.2,21.5],[-87,21.5],[-87.5,19.5],[-88.3,18.5],[-88.9,17.9],[-90.4,17.8],[-91.4,17.3],[-92.1,16.2],[-92.2,14.6],[-94,16],[-95.5,15.9],[-97.5,15.9],[-99.5,16.7],[-101.5,17.8],[-103.5,18.3],[-105.2,20.2],[-105.5,21.5],[-106,22.8],[-108,25],[-109.4,26.8],[-111,28],[-112.4,29.7],[-113.1,31.2],[-114.8,31.8]];
@@ -96,6 +100,11 @@
   const hexA = h => { const c = document.createElement('canvas').getContext('2d'); c.fillStyle = h; const v = c.fillStyle;
     if (v[0]==='#'){ const n = parseInt(v.slice(1),16); return 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','; } return v.replace(')',',').replace('rgb(','rgba('); };
   const byId = {}; N.forEach(n => byId[n[0]] = { id:n[0], name:n[1], lon:n[2], lat:n[3], t:n[4], adj:[], pulse:Math.random()*6 });
+  // Data Centers Equinix (cuadro ámbar alrededor del nodo; no se tocan estilos):
+  // MX1/MX2 Querétaro, MO1/MO2 Monterrey, SP São Paulo, RJ Río, ST Santiago, BG Bogotá, LM Lima
+  const EQ = new Set(['QRO','MTY','SAO','RIO','SCL','BOG','LIM']);
+  // México: líneas internas más delgadas (0.6) sin perder las conexiones
+  const MX_IDS = new Set(['TIJ','ENS','NOG','HER','JUA','CHI','ACU','MON','TOR','MTY','REY','MAT','TAM','SLP','ZAC','CUL','MAZ','TEP','GDL','LEO','QRO','CDMX','PUE','VER','MOR','LC','ACA','OAX','TUX','VIL','MER','CAN','LPZ','CAB']);
   let W, H, DPR, land = [];
   const P = n => ({ x:(n.lon-LON0)/(LON1-LON0)*W, y:(LAT1-n.lat)/(LAT1-LAT0)*H });
   const inside = (pt, poly) => { let c = false;
@@ -107,7 +116,7 @@
   const links = E.map(([a,b],i) => {
     byId[a].adj.push(b); byId[b].adj.push(a);
     const intl = Math.hypot(byId[a].lon-byId[b].lon, byId[a].lat-byId[b].lat) > 30;
-    return { a:byId[a], b:byId[b], intl, bow:(i%2?1:-1)*(intl?0.22:0.1), heat:0 };
+    return { a:byId[a], b:byId[b], intl, mx: MX_IDS.has(a) && MX_IDS.has(b), bow:(i%2?1:-1)*(intl?0.22:0.1), heat:0 };
   });
   const linkOf = (a,b) => links.find(l => (l.a.id===a&&l.b.id===b)||(l.a.id===b&&l.b.id===a));
   const ctrl = l => { const A=l.a.p,B=l.b.p; return { x:(A.x+B.x)/2-(B.y-A.y)*l.bow, y:(A.y+B.y)/2+(B.x-A.x)*l.bow }; };
@@ -119,10 +128,10 @@
 
     // Encuadre AUTOMÁTICO: se ajusta a los límites reales de los nodos + un margen,
     // y el contenedor toma exactamente esa proporción (sin océano de sobra ni deformación).
-    const PAD = 5;
+    const PAD = 5, PAD_TOP = 14, PAD_BOTTOM = 24; // headroom: el arco LA-Tokio sube hasta lat 63.2 y el arco Santiago-Sídney baja hasta lat -58.1; con PAD 5 ambos se cortaban
     const lons = N.map(n => n[2]), lats = N.map(n => n[3]);
     LON0 = Math.min(...lons) - PAD; LON1 = Math.max(...lons) + PAD;
-    LAT0 = Math.min(...lats) - PAD; LAT1 = Math.max(...lats) + PAD;
+    LAT0 = Math.min(...lats) - PAD_BOTTOM; LAT1 = Math.max(...lats) + PAD_TOP;
     wrap.style.aspectRatio = (LON1-LON0) + ' / ' + (LAT1-LAT0);
     W = Math.max(1, wrap.clientWidth); H = Math.max(1, wrap.clientHeight);
 
@@ -168,7 +177,7 @@
     for (const l of links){
       l.heat = Math.max(0, l.heat - dt*0.6);
       cx.beginPath(); cx.moveTo(l.a.p.x,l.a.p.y); cx.quadraticCurveTo(l.c.x,l.c.y,l.b.p.x,l.b.p.y);
-      cx.setLineDash(l.intl?[5,6]:[]); cx.lineWidth = 1;
+      cx.setLineDash(l.intl?[5,6]:[]); cx.lineWidth = l.mx ? 0.6 : 1;
       cx.strokeStyle = l.intl ? 'rgba(255,180,74,.35)' : 'rgba(255,255,255,.14)'; cx.stroke();
       if (l.heat>0.02){ cx.lineWidth = 1.5+l.heat*2; cx.strokeStyle = (l.intl?'rgba(255,180,74,':hexA(ACCENT))+l.heat*.9+')'; cx.stroke(); }
     }
@@ -211,6 +220,7 @@
       if (n.t==='m'){ cx.arc(x,y,3,0,7); }
       else { cx.moveTo(x,y-6); cx.lineTo(x+6,y+4); cx.lineTo(x-6,y+4); cx.closePath(); }
       cx.fill(); cx.shadowBlur = 0;
+      if (EQ.has(n.id)){ cx.strokeStyle = AMBER; cx.lineWidth = 1.5; cx.strokeRect(x-7, y-7, 14, 14); }
       if (n.t==='p' || hover===n){
         putLabel(n.name, x + 9, y, W<520 ? 8 : W<900 ? 9 : 11,
                  hover===n ? '#fff' : '#9db0da', '', 'left');
@@ -225,7 +235,7 @@
   cv.addEventListener('pointermove', e => {
     const b = cv.getBoundingClientRect(), mx = e.clientX-b.left, my = e.clientY-b.top; hover = null;
     for (const n of Object.values(byId)) if (Math.hypot(n.p.x-mx,n.p.y-my)<10) hover = n;
-    if (hover){ tip.textContent = hover.name+' · '+({p:'POP',m:'Red metropolitana',x:'Enlace internacional'})[hover.t];
+    if (hover){ tip.textContent = hover.name+' · '+({p:'POP',m:'Red metropolitana',x:'Enlace internacional'})[hover.t] + (EQ.has(hover.id) ? ' · Equinix' : '');
       tip.style.left = Math.min(mx+12,W-190)+'px'; tip.style.top = (my+12)+'px'; tip.style.opacity = 1; } else tip.style.opacity = 0;
   });
   cv.addEventListener('pointerleave', () => { hover = null; tip.style.opacity = 0; });
