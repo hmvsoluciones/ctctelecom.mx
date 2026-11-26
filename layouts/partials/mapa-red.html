@@ -1,4 +1,4 @@
-<!-- =====INICIO MAPA ===== -->
+<!-- =====INICIO MAPA · VARIANTE CON CONTORNO ===== -->
 <style>
   #rm-root{--rm-acc:#FF0060}
   #rm-root .rm-wrap{position:relative;width:100%;min-height:0;overflow:hidden;border-radius:1.5rem}
@@ -138,15 +138,7 @@
     cv.width = Math.round(W*DPR); cv.height = Math.round(H*DPR); cx.setTransform(DPR,0,0,DPR,0,0);
     Object.values(byId).forEach(n => n.p = P(n));
     links.forEach(l => l.c = ctrl(l));
-    // Mapa de puntos: [x, y, resaltado]
-    land = []; const step = Math.max(4, W/230);
-    for (let y=step/2; y<H; y+=step) for (let x=step/2; x<W; x+=step){
-      const pt = [LON0 + x/W*(LON1-LON0), LAT1 - y/H*(LAT1-LAT0)];
-      const hl = inside(pt,MX) || inside(pt,BAJA) || inside(pt,COL) || inside(pt,CHL);
-      const dim = !hl && OTHER.some(poly => inside(pt,poly));
-      if (hl || dim) land.push([x,y,hl]);
-    }
-    land.step = step;
+    // Contorno: no se generan puntos; la tierra se dibuja delineando los polígonos (ver frame()).
   }
 
   // ---- Paquetes: viajan salto a salto por la ruta más corta
@@ -170,9 +162,14 @@
   function frame(now){
     const dt = Math.min(.05,(now-last)/1000); last = now;
     cx.clearRect(0,0,W,H);
-    // tierra
-    const r = land.step*.2;
-    for (const [x,y,hl] of land){ cx.fillStyle = hl ? 'rgba(255,255,255,.28)' : 'rgba(255,255,255,.09)'; cx.fillRect(x-r,y-r,r*2,r*2); }
+    // tierra: contorno de los continentes (MX/BAJA/COL/CHL más marcado, igual que en la versión de puntos)
+    const strokePoly = (poly, style, width) => {
+      cx.beginPath();
+      poly.forEach(([lo, la], k) => { const q = P({lon:lo, lat:la}); k ? cx.lineTo(q.x, q.y) : cx.moveTo(q.x, q.y); });
+      cx.closePath(); cx.strokeStyle = style; cx.lineWidth = width; cx.stroke();
+    };
+    for (const poly of OTHER) strokePoly(poly, 'rgba(255,255,255,.22)', 1);
+    for (const poly of [MX, BAJA, COL, CHL]) strokePoly(poly, 'rgba(255,255,255,.45)', 1.2);
     // enlaces
     for (const l of links){
       l.heat = Math.max(0, l.heat - dt*0.6);
